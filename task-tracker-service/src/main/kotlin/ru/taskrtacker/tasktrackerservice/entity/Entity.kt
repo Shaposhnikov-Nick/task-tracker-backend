@@ -42,83 +42,143 @@ abstract class BaseEntity {
     }
 }
 
+
 @Entity
 @Table(name = "Users")
 class User(
+
     @Column
-    val name: String,
-    @Column(name = "last_name")
-    val lastName: String,
+    val login: String,
+
     @Column
-    val birthday: LocalDate,
+    val password: String,
+
     @Column
     val email: String,
+
     @Column(name = "email_confirmed")
     val emailConfirmed: Boolean,
+
     @Column
     val about: String,
+
     @Column
     val blocked: Boolean,
+
+    @Enumerated(EnumType.STRING)
     val role: Role,
-    val created: LocalDateTime,
-    val updated: LocalDateTime,
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "profile_id")
+    val profile: UserProfile,
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val tasks: MutableSet<Task> = mutableSetOf(),
-    val taskGroups: Set<TaskGroup> = mutableSetOf()
+) : BaseEntity()
+
+
+@Entity
+@Table(name = "UsersProfile")
+class UserProfile(
+
+    @OneToOne(mappedBy = "profile")
+    val user: User,
+
+    @Column
+    val name: String,
+
+    @Column(name = "last_name")
+    val lastName: String,
+
+    @Column
+    val birthday: LocalDate,
+
+    @Column
+    val avatar: ByteArray
 ) : BaseEntity()
 
 
 @Entity
 @Table(name = "Task")
 class Task(
+
+    @Column
     val title: String,
+
+    @Column
     val description: String,
-    @OneToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
     val group: TaskGroup?,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User,
+
+    @Column
     val parentId: Long?,
+
+    @Enumerated(EnumType.STRING)
     val status: TaskStatus,
+
+    @Enumerated(EnumType.STRING)
     val priority: TaskPriority,
+
+    @Column
     val deadLine: LocalDateTime,
-    val reporter: User,
-    val assignee: User,
-    val created: LocalDateTime,
-    val updated: LocalDateTime,
-    val tags: Set<Tag> = mutableSetOf(),
+
+    @Column
+    val reporterId: Long,
+
+    @Column
+    val assigneeId: Long,
+
+    @ManyToMany
+    val tags: Set<Tag> = mutableSetOf(), // TODO
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val comments: Set<Comment> = mutableSetOf()
 ) : BaseEntity()
+
 
 @Entity
 @Table(name = "Comment")
 class Comment(
-    val id: Long? = null,
+
+    @Column
     val description: String,
-    val user: User,
-    val images: List<ByteArray>,
-    val created: LocalDateTime,
-    val updated: LocalDateTime
+
+    @Column
+    val userId: Long,
+
+//    val images: List<ByteArray>, // TODO
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    val task: Task
 ) : BaseEntity()
+
 
 @Entity
 @Table(name = "Tag")
 class Tag(
-    val id: Long? = null,
     val name: String,
-    val created: LocalDateTime,
-    val updated: LocalDateTime
 ) : BaseEntity()
 
 
 @Entity
 @Table(name = "TaskGroup")
 class TaskGroup(
+
+    @Column
     val title: String,
+
+    @Column
     val description: String,
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val tasks: Set<Task> = mutableSetOf(),
-    val created: LocalDateTime,
-    val updated: LocalDateTime
 ) : BaseEntity()
 
 
@@ -127,11 +187,13 @@ enum class Role {
     ADMIN
 }
 
+
 enum class TaskStatus {
     TODO,
     IN_PROGRESS,
     DONE
 }
+
 
 enum class TaskPriority {
     HIGH,
