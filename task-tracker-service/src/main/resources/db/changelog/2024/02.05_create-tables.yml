@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
-            tableName: users
+            tableName: Users
             schemaName: task_tracker
             columns:
               - column:
@@ -66,3 +66,162 @@ databaseChangeLog:
                   type: varchar(100)
                   constraints:
                     nullable: true
+
+  - changeSet:
+      id: 08.02.2024_create-table-user_profile
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: UserProfile
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_user_profile
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birthday
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: avatar
+                  type: bytea
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: update_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 08.02.2024_create-table-task
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: task
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_task
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deadLine
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reporter_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assignee_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: update_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseTableSchemaName: task_tracker
+            baseColumnNames: user_id
+            constraintName: fk_task_on_users
+            referencedTableSchemaName: task_tracker
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseTableSchemaName: task_tracker
+            baseColumnNames: reporter_id
+            constraintName: fk_reporter_id_on_users
+            referencedTableSchemaName: task_tracker
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseTableSchemaName: task_tracker
+            baseColumnNames: assignee_id
+            constraintName: fk_assignee_id_on_users
+            referencedTableSchemaName: task_tracker
+            referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseTableSchemaName: task_tracker
+            baseColumnNames: group_id
+            constraintName: fk_task_on_group
+            referencedTableSchemaName: task_tracker
+            referencedTableName: TaskGroup
+            referencedColumnNames: id
