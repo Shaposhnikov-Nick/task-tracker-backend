@@ -60,16 +60,21 @@ class User(
     val emailConfirmed: Boolean,
 
     @Column
-    val about: String,
+    val about: String?,
 
     @Column
     val blocked: Boolean,
 
-    @Enumerated(EnumType.STRING)
-    val role: Role,
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JoinTable(
+        name = "UserRole",
+        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")]
+    )
+    val role: Set<Role> = mutableSetOf(),
 
     @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id") // TODO разобраться
     val profile: UserProfile,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
@@ -93,8 +98,9 @@ class UserProfile(
     @Column
     val birthday: LocalDate,
 
+    @Lob
     @Column
-    val avatar: ByteArray
+    val avatar: ByteArray?
 ) : BaseEntity()
 
 
@@ -116,7 +122,7 @@ class Task(
     @JoinColumn(name = "user_id")
     val user: User,
 
-    @Column
+    @Column(name = "parent_id")
     val parentId: Long?,
 
     @Enumerated(EnumType.STRING)
@@ -128,23 +134,23 @@ class Task(
     @Column
     val deadLine: LocalDateTime,
 
-    @Column
+    @Column(name = "reporter_id")
     val reporterId: Long,
 
-    @Column
+    @Column(name = "assignee_id")
     val assigneeId: Long,
 
     @ManyToMany
-    val tags: Set<Tag> = mutableSetOf(), // TODO
+    val tags: MutableSet<Tag> = mutableSetOf(), // TODO
 
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val comments: Set<Comment> = mutableSetOf()
+    val taskComments: Set<TaskComment> = mutableSetOf()
 ) : BaseEntity()
 
 
 @Entity
-@Table(name = "Comment")
-class Comment(
+@Table(name = "TaskComment")
+class TaskComment(
 
     @Column
     val description: String,
@@ -152,18 +158,38 @@ class Comment(
     @Column
     val userId: Long,
 
-//    val images: List<ByteArray>, // TODO
+    @OneToMany
+    val images: List<Image>? = null, // TODO
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     val task: Task
 ) : BaseEntity()
 
+@Entity
+@Table(name = "Image")
+class Image(
+
+    @Lob
+    @Column
+    val image: ByteArray? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    val comment: TaskComment
+
+): BaseEntity()
+
 
 @Entity
 @Table(name = "Tag")
 class Tag(
+
+    @Column
     val name: String,
+
+    @ManyToMany  // TODO
+    val tasks: MutableSet<Task> = mutableSetOf()
 ) : BaseEntity()
 
 
@@ -182,10 +208,13 @@ class TaskGroup(
 ) : BaseEntity()
 
 
-enum class Role {
-    USER,
-    ADMIN
-}
+@Entity
+@Table(name = "Role")
+class Role(
+    val role: String,
+    @ManyToMany(mappedBy = "roles")
+    val users: MutableSet<User> = mutableSetOf()
+) : BaseEntity()
 
 
 enum class TaskStatus {
