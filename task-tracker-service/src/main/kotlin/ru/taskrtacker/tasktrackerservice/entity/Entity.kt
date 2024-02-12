@@ -71,15 +71,37 @@ class User(
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")]
     )
-    val role: Set<Role> = mutableSetOf(),
+    val roles: MutableSet<Role> = mutableSetOf(),
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "profile_id")
     val profile: UserProfile,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val tasks: MutableSet<Task> = mutableSetOf(),
-) : BaseEntity()
+    val tasks: MutableSet<Task> = mutableSetOf()
+
+) : BaseEntity() {
+
+    fun addRole(role: Role) {
+        roles.add(role)
+        role.users.add(this)
+    }
+
+    fun removeRole(role: Role) {
+        roles.remove(role)
+        role.users.remove(this)
+    }
+
+    fun addTask(task: Task) {
+        tasks.add(task)
+        task.user = this
+    }
+
+    fun removeTask(task: Task) {
+        tasks.remove(task)
+        task.user = null
+    }
+}
 
 
 @Entity
@@ -101,6 +123,7 @@ class UserProfile(
     @Lob
     @Column
     val avatar: ByteArray?
+
 ) : BaseEntity()
 
 
@@ -116,11 +139,11 @@ class Task(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
-    val group: TaskGroup?,
+    var group: TaskGroup?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User,
+    var user: User? = null,
 
     @Column(name = "parent_id")
     val parentId: Long?,
@@ -133,9 +156,6 @@ class Task(
 
     @Column
     val deadLine: LocalDateTime,
-
-    @Column(name = "reporter_id")
-    val reporterId: Long,
 
     @Column(name = "assignee_id")
     val assigneeId: Long,
@@ -150,7 +170,30 @@ class Task(
 
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val taskComments: MutableSet<TaskComment> = mutableSetOf()
-) : BaseEntity()
+
+) : BaseEntity() {
+
+    fun addTag(tag: Tag) {
+        tags.add(tag)
+        tag.tasks.add(this)
+    }
+
+    fun removeTag(tag: Tag) {
+        tags.remove(tag)
+        tag.tasks.remove(this)
+    }
+
+    fun addComment(comment: TaskComment) {
+        taskComments.add(comment)
+        comment.task = this
+    }
+
+    fun removeComment(comment: TaskComment) {
+        taskComments.remove(comment)
+        comment.task = null
+    }
+
+}
 
 
 @Entity
@@ -168,9 +211,21 @@ class TaskComment(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
-    val task: Task
+    var task: Task?
 
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun addImage(image: Image) {
+        images.add(image)
+        image.comment = this
+    }
+
+    fun removeImage(image: Image) {
+        images.remove(image)
+        image.comment = null
+    }
+
+}
 
 @Entity
 @Table(name = "Image")
@@ -182,7 +237,7 @@ class Image(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
-    val comment: TaskComment
+    var comment: TaskComment?
 
 ): BaseEntity()
 
@@ -211,9 +266,21 @@ class TaskGroup(
     val description: String,
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val tasks: Set<Task> = mutableSetOf()
+    val tasks: MutableSet<Task> = mutableSetOf()
 
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun addTask(task: Task) {
+        tasks.add(task)
+        task.group = this
+    }
+
+    fun removeTask(task: Task) {
+        tasks.remove(task)
+        task.group = null
+    }
+
+}
 
 
 @Entity
