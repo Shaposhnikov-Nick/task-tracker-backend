@@ -74,7 +74,7 @@ class User(
     val role: Set<Role> = mutableSetOf(),
 
     @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "profile_id") // TODO разобраться
+    @JoinColumn(name = "profile_id")
     val profile: UserProfile,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
@@ -140,11 +140,16 @@ class Task(
     @Column(name = "assignee_id")
     val assigneeId: Long,
 
-    @ManyToMany
-    val tags: MutableSet<Tag> = mutableSetOf(), // TODO
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JoinTable(
+        name = "TaskTag",
+        joinColumns = [JoinColumn(name = "task_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "tag_id", referencedColumnName = "id")]
+    )
+    val tags: MutableSet<Tag> = mutableSetOf(),
 
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val taskComments: Set<TaskComment> = mutableSetOf()
+    val taskComments: MutableSet<TaskComment> = mutableSetOf()
 ) : BaseEntity()
 
 
@@ -158,12 +163,13 @@ class TaskComment(
     @Column
     val userId: Long,
 
-    @OneToMany
-    val images: List<Image>? = null, // TODO
+    @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.PERSIST])
+    val images: MutableSet<Image> = mutableSetOf(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     val task: Task
+
 ) : BaseEntity()
 
 @Entity
@@ -188,8 +194,9 @@ class Tag(
     @Column
     val name: String,
 
-    @ManyToMany  // TODO
+    @ManyToMany(mappedBy = "tags")
     val tasks: MutableSet<Task> = mutableSetOf()
+
 ) : BaseEntity()
 
 
@@ -204,7 +211,8 @@ class TaskGroup(
     val description: String,
 
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    val tasks: Set<Task> = mutableSetOf(),
+    val tasks: Set<Task> = mutableSetOf()
+
 ) : BaseEntity()
 
 
@@ -212,8 +220,10 @@ class TaskGroup(
 @Table(name = "Role")
 class Role(
     val role: String,
+
     @ManyToMany(mappedBy = "roles")
     val users: MutableSet<User> = mutableSetOf()
+
 ) : BaseEntity()
 
 
