@@ -169,11 +169,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: reporter_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-              - column:
                   name: assignee_id
                   type: bigint
                   constraints:
@@ -198,14 +193,6 @@ databaseChangeLog:
             baseTableSchemaName: task_tracker
             baseColumnNames: user_id
             constraintName: fk_Task_on_Users
-            referencedTableSchemaName: task_tracker
-            referencedTableName: Users
-            referencedColumnNames: id
-        - addForeignKeyConstraint:
-            baseTableName: Task
-            baseTableSchemaName: task_tracker
-            baseColumnNames: reporter_id
-            constraintName: fk_reporter_id_on_Users
             referencedTableSchemaName: task_tracker
             referencedTableName: Users
             referencedColumnNames: id
