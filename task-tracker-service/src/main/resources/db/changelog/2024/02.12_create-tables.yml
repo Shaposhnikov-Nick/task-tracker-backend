@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 09.02.2024_create-table-TaskComment
+      id: 12.02.2024_create-table-Tag
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
-            tableName: TaskComment
+            tableName: Tag
             schemaName: task_tracker
             columns:
               - column:
@@ -13,60 +13,69 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_TaskComment
+                    primaryKeyName: pk_Tag
               - column:
-                  name: description
-                  type: varchar(1024)
+                  name: name
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: user_id
-                  type: bigint
+                  name: created_date
+                  type: timestamp
                   constraints:
-                    nullable: false
+                    nullable: true
+              - column:
+                  name: update_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: update_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 12.02.2024_create-table-TaskTag
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: TaskTag
+            schemaName: task_tracker
+            columns:
               - column:
                   name: task_id
                   type: bigint
                   constraints:
                     nullable: false
               - column:
-                  name: created_date
-                  type: timestamp
+                  name: tag_id
+                  type: bigint
                   constraints:
-                    nullable: true
-              - column:
-                  name: update_date
-                  type: timestamp
-                  constraints:
-                    nullable: true
-              - column:
-                  name: update_by
-                  type: varchar(100)
-                  constraints:
-                    nullable: true
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: task_id, tag_id
+            constraintName: pk_TaskTag
+            tableName: TaskTags
         - addForeignKeyConstraint:
-            baseTableName: TaskComment
-            baseTableSchemaName: task_tracker
-            baseColumnNames: user_id
-            constraintName: fk_task_comment_on_users
-            referencedTableSchemaName: task_tracker
-            referencedTableName: Users
+            baseTableName: TaskTags
+            baseColumnNames: task_id
+            constraintName: fk_TaskTag_Task
+            referencedTableName: Task
             referencedColumnNames: id
         - addForeignKeyConstraint:
-            baseTableName: TaskComment
-            baseTableSchemaName: task_tracker
-            baseColumnNames: task_id
-            constraintName: fk_task_comment_on_task
-            referencedTableSchemaName: task_tracker
-            referencedTableName: Task
+            baseTableName: TaskTags
+            baseColumnNames: tag_id
+            constraintName: fk_TaskTag_Tag
+            referencedTableName: Tag
             referencedColumnNames: id
 
   - changeSet:
-      id: 09.02.2024_create-table-Image
+      id: 12.02.2024_create-table-TaskGroup
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
-            tableName: Image
+            tableName: TaskGroup
             schemaName: task_tracker
             columns:
               - column:
@@ -75,15 +84,15 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_Image
+                    primaryKeyName: pk_TaskGroup
               - column:
-                  name: image
-                  type: bytea
+                  name: title
+                  type: varchar(255)
                   constraints:
-                    nullable: true
+                    nullable: false
               - column:
-                  name: comment_id
-                  type: bigint
+                  name: description
+                  type: varchar(1024)
                   constraints:
                     nullable: false
               - column:
@@ -101,11 +110,4 @@ databaseChangeLog:
                   type: varchar(100)
                   constraints:
                     nullable: true
-        - addForeignKeyConstraint:
-            baseTableName: Image
-            baseTableSchemaName: task_tracker
-            baseColumnNames: comment_id
-            constraintName: fk_image_comment
-            referencedTableSchemaName: task_tracker
-            referencedTableName: TaskComment
-            referencedColumnNames: id
+

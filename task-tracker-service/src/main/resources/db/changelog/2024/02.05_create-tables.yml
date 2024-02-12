@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 05.02.2024_create-table-users
+      id: 05.02.2024_create-table-Users
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
@@ -13,7 +13,7 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_users
+                    primaryKeyName: pk_Users
               - column:
                   name: login
                   type: varchar(100)
@@ -68,7 +68,7 @@ databaseChangeLog:
                     nullable: true
 
   - changeSet:
-      id: 08.02.2024_create-table-user_profile
+      id: 08.02.2024_create-table-UserProfile
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
@@ -81,7 +81,7 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_user_profile
+                    primaryKeyName: pk_UserProfile
               - column:
                   name: name
                   type: varchar(100)
@@ -119,11 +119,11 @@ databaseChangeLog:
                     nullable: true
 
   - changeSet:
-      id: 08.02.2024_create-table-task
+      id: 08.02.2024_create-table-Task
       author: Shaposhnikov Nikolay
       changes:
         - createTable:
-            tableName: task
+            tableName: Task
             schemaName: task_tracker
             columns:
               - column:
@@ -132,7 +132,7 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-                    primaryKeyName: pk_task
+                    primaryKeyName: pk_Task
               - column:
                   name: title
                   type: varchar(255)
@@ -194,34 +194,34 @@ databaseChangeLog:
                   constraints:
                     nullable: true
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: Task
             baseTableSchemaName: task_tracker
             baseColumnNames: user_id
-            constraintName: fk_task_on_users
+            constraintName: fk_Task_on_Users
             referencedTableSchemaName: task_tracker
-            referencedTableName: users
+            referencedTableName: Users
             referencedColumnNames: id
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: Task
             baseTableSchemaName: task_tracker
             baseColumnNames: reporter_id
-            constraintName: fk_reporter_id_on_users
+            constraintName: fk_reporter_id_on_Users
             referencedTableSchemaName: task_tracker
-            referencedTableName: users
+            referencedTableName: Users
             referencedColumnNames: id
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: Task
             baseTableSchemaName: task_tracker
             baseColumnNames: assignee_id
-            constraintName: fk_assignee_id_on_users
+            constraintName: fk_assignee_id_on_Users
             referencedTableSchemaName: task_tracker
-            referencedTableName: users
+            referencedTableName: Users
             referencedColumnNames: id
         - addForeignKeyConstraint:
-            baseTableName: task
+            baseTableName: Task
             baseTableSchemaName: task_tracker
             baseColumnNames: group_id
-            constraintName: fk_task_on_group
+            constraintName: fk_Task_on_TaskGroup
             referencedTableSchemaName: task_tracker
             referencedTableName: TaskGroup
             referencedColumnNames: id
