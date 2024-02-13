@@ -57,12 +57,12 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: update_date
+                  name: updated_date
                   type: timestamp
                   constraints:
                     nullable: true
               - column:
-                  name: update_by
+                  name: updated_by
                   type: varchar(100)
                   constraints:
                     nullable: true
@@ -108,12 +108,52 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: update_date
+                  name: updated_date
                   type: timestamp
                   constraints:
                     nullable: true
               - column:
-                  name: update_by
+                  name: updated_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: 08.02.2024_create-table-TaskGroup
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: TaskGroup
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_TaskGroup
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1024)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_by
                   type: varchar(100)
                   constraints:
                     nullable: true
@@ -179,12 +219,12 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: update_date
+                  name: updated_date
                   type: timestamp
                   constraints:
                     nullable: true
               - column:
-                  name: update_by
+                  name: updated_by
                   type: varchar(100)
                   constraints:
                     nullable: true

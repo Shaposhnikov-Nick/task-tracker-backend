@@ -35,12 +35,12 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: update_date
+                  name: updated_date
                   type: timestamp
                   constraints:
                     nullable: true
               - column:
-                  name: update_by
+                  name: updated_by
                   type: varchar(100)
                   constraints:
                     nullable: true
@@ -92,12 +92,12 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: update_date
+                  name: updated_date
                   type: timestamp
                   constraints:
                     nullable: true
               - column:
-                  name: update_by
+                  name: updated_by
                   type: varchar(100)
                   constraints:
                     nullable: true
@@ -105,7 +105,7 @@ databaseChangeLog:
             baseTableName: Image
             baseTableSchemaName: task_tracker
             baseColumnNames: comment_id
-            constraintName: fk_image_comment
+            constraintName: fk_Image_TaskComment
             referencedTableSchemaName: task_tracker
             referencedTableName: TaskComment
             referencedColumnNames: id
