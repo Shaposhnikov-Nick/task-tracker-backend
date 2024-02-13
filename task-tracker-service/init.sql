@@ -1,1 +1,0 @@
-CREATE SCHEMA task_tracker;
