@@ -1,10 +1,12 @@
 package ru.taskrtacker.tasktrackerservice.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -22,7 +24,7 @@ abstract class BaseEntity {
     lateinit var createdDate: LocalDateTime
 
     @LastModifiedDate
-    @Column(name = "update_date")
+    @Column(name = "updated_date")
     lateinit var updateDate: LocalDateTime
 
     @LastModifiedBy
@@ -122,6 +124,7 @@ class UserProfile(
 
     @Lob
     @Column
+    @JdbcTypeCode(Types.LONGVARBINARY)
     val avatar: ByteArray?
 
 ) : BaseEntity()
