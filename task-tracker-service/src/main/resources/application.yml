@@ -1,0 +1,51 @@
+server:
+  port: ${PORT}
+
+spring:
+  application:
+    name: Task Service
+#  profiles:
+#    active: ${ACTIVE_PROFILE}
+
+  datasource:
+    driver-class-name: ${DB_DRIVER}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        default_schema: task_tracker
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    show-sql: true
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    password: ${DB_USER}
+    user: ${DB_PASSWORD}
+#    liquibase-schema: account_service
+
+#  config:
+#    import: optional:file:.env[.properties]
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+# Logging
+logging:
+  level:
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+
