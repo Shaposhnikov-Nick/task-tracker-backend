@@ -22,15 +22,15 @@ services:
     networks:
       - task-service-network
       
-  backend:
-    build: .
-    container_name: task-service-backend
+  task-service:
+    build: ./task-tracker-service/
+    container_name: task-service
     restart: always
     depends_on:
       database:
         condition: service_healthy
     ports:
-      - ${BACKEND_HOST_PORT}:${BACKEND_CONTAINER_PORT}
+      - ${TASK_SERVICE_HOST_PORT}:${TASK_SERVICE_CONTAINER_PORT}
     networks:
       - task-service-network
 
