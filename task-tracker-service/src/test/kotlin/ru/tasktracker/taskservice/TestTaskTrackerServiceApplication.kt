@@ -1,4 +1,4 @@
-package ru.taskrtacker.tasktrackerservice
+package ru.tasktracker.taskservice
 
 import org.springframework.boot.fromApplication
 import org.springframework.boot.test.context.TestConfiguration
