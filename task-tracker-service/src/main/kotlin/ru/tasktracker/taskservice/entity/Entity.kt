@@ -1,4 +1,4 @@
-package ru.taskrtacker.tasktrackerservice.entity
+package ru.tasktracker.taskservice.entity
 
 import cz.encircled.skom.Convertable
 import jakarta.persistence.*
@@ -10,25 +10,25 @@ import java.time.LocalDateTime
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-abstract class BaseEntity {
+abstract class BaseEntity(
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: Long? = null,
 
     @CreatedDate
     @Column(name = "created_date")
-    lateinit var createdDate: LocalDateTime
+    var createdDate: LocalDateTime? = null,
 
     @LastModifiedDate
     @Column(name = "updated_date")
-    lateinit var updateDate: LocalDateTime
+    var updateDate: LocalDateTime? = null,
 
     @LastModifiedBy
     @Column(name = "updated_by", updatable = false)
-    lateinit var updatedBy: String
-
+    var updatedBy: String? = null
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -65,7 +65,7 @@ class User(
     @Column
     val blocked: Boolean,
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "`UserRole`",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
@@ -239,7 +239,7 @@ class Image(
     @JoinColumn(name = "comment_id")
     var comment: TaskComment?
 
-): BaseEntity(), Convertable
+) : BaseEntity(), Convertable
 
 
 @Entity
