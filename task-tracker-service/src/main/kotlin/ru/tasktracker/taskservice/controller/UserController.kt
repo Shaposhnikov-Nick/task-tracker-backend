@@ -1,5 +1,7 @@
 package ru.tasktracker.taskservice.controller
 
+import jakarta.validation.Valid
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -9,14 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 import ru.tasktracker.taskservice.dto.UserDto
 import ru.tasktracker.taskservice.service.UserService
 
+
+@Validated
 interface UserController {
 
-    fun createUser(@RequestBody userDto: UserDto): UserDto
+    fun createUser(@RequestBody @Valid userDto: UserDto): UserDto
 
-    fun getUser(@PathVariable("id") id: Long): UserDto
+    fun getUser(@PathVariable id: Long): UserDto
 
 }
-
 
 @RestController
 @RequestMapping("user")
