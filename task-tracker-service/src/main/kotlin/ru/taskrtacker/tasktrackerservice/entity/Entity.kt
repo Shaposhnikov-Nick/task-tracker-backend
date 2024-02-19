@@ -1,5 +1,6 @@
 package ru.taskrtacker.tasktrackerservice.entity
 
+import cz.encircled.skom.Convertable
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
@@ -79,7 +80,7 @@ class User(
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val tasks: MutableSet<Task> = mutableSetOf()
 
-) : BaseEntity() {
+) : BaseEntity(), Convertable {
 
     fun addRole(role: Role) {
         roles.add(role)
@@ -123,7 +124,7 @@ class UserProfile(
     @Column
     val avatar: ByteArray?
 
-) : BaseEntity()
+) : BaseEntity(), Convertable
 
 
 @Entity
@@ -170,7 +171,7 @@ class Task(
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val taskComments: MutableSet<TaskComment> = mutableSetOf()
 
-) : BaseEntity() {
+) : BaseEntity(), Convertable {
 
     fun addTag(tag: Tag) {
         tags.add(tag)
@@ -212,7 +213,7 @@ class TaskComment(
     @JoinColumn(name = "task_id")
     var task: Task?
 
-) : BaseEntity() {
+) : BaseEntity(), Convertable {
 
     fun addImage(image: Image) {
         images.add(image)
@@ -238,7 +239,7 @@ class Image(
     @JoinColumn(name = "comment_id")
     var comment: TaskComment?
 
-): BaseEntity()
+): BaseEntity(), Convertable
 
 
 @Entity
@@ -251,7 +252,7 @@ class Tag(
     @ManyToMany(mappedBy = "tags")
     val tasks: MutableSet<Task> = mutableSetOf()
 
-) : BaseEntity()
+) : BaseEntity(), Convertable
 
 
 @Entity
@@ -267,7 +268,7 @@ class TaskGroup(
     @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val tasks: MutableSet<Task> = mutableSetOf()
 
-) : BaseEntity() {
+) : BaseEntity(), Convertable {
 
     fun addTask(task: Task) {
         tasks.add(task)
@@ -290,7 +291,7 @@ class Role(
     @ManyToMany(mappedBy = "roles")
     val users: MutableSet<User> = mutableSetOf()
 
-) : BaseEntity()
+) : BaseEntity(), Convertable
 
 
 enum class TaskStatus {
