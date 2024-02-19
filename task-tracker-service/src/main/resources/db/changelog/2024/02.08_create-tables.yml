@@ -78,7 +78,7 @@ databaseChangeLog:
                     primaryKeyName: pk_Image
               - column:
                   name: image
-                  type: bytea
+                  type: oid
                   constraints:
                     nullable: true
               - column:

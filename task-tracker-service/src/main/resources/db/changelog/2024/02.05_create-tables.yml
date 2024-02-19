@@ -99,7 +99,7 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: avatar
-                  type: bytea
+                  type: oid
                   constraints:
                     nullable: true
               - column:
@@ -117,6 +117,84 @@ databaseChangeLog:
                   type: varchar(100)
                   constraints:
                     nullable: true
+
+  - changeSet:
+      id: 08.02.2024_create-table-Role
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: Role
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_Role
+              - column:
+                  name: role
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 08.02.2024_create-table-UserRole
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: UserRole
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: user_id, role_id
+            constraintName: pk_UserRole
+            tableName: UserRole
+            schemaName: task_tracker
+        - addForeignKeyConstraint:
+            baseTableSchemaName: task_tracker
+            baseTableName: UserRole
+            baseColumnNames: user_id
+            constraintName: fk_UserRole_on_Users
+            referencedTableSchemaName: task_tracker
+            referencedTableName: Users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: UserRole
+            baseTableSchemaName: task_tracker
+            baseColumnNames: role_id
+            constraintName: fk_UserRole_on_Role
+            referencedTableSchemaName: task_tracker
+            referencedTableName: Role
+            referencedColumnNames: id
+
   - changeSet:
       id: 08.02.2024_create-table-TaskGroup
       author: Shaposhnikov Nikolay
@@ -176,6 +254,11 @@ databaseChangeLog:
               - column:
                   name: title
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(2048)
                   constraints:
                     nullable: false
               - column:
