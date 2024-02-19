@@ -1,13 +1,10 @@
 package ru.taskrtacker.tasktrackerservice.entity
 
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.sql.Types
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @MappedSuperclass
@@ -46,7 +43,7 @@ abstract class BaseEntity {
 
 
 @Entity
-@Table(name = "Users")
+@Table(name = "`Users`")
 class User(
 
     @Column
@@ -69,14 +66,14 @@ class User(
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinTable(
-        name = "UserRole",
+        name = "`UserRole`",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")]
     )
     val roles: MutableSet<Role> = mutableSetOf(),
 
     @OneToOne(cascade = [CascadeType.ALL])
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", referencedColumnName = "id")
     val profile: UserProfile,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
@@ -107,11 +104,11 @@ class User(
 
 
 @Entity
-@Table(name = "UsersProfile")
+@Table(name = "`UserProfile`")
 class UserProfile(
 
     @OneToOne(mappedBy = "profile")
-    val user: User,
+    val user: User? = null,
 
     @Column
     val name: String,
@@ -120,18 +117,17 @@ class UserProfile(
     val lastName: String,
 
     @Column
-    val birthday: LocalDate,
+    val birthday: LocalDateTime,
 
     @Lob
     @Column
-    @JdbcTypeCode(Types.LONGVARBINARY)
     val avatar: ByteArray?
 
 ) : BaseEntity()
 
 
 @Entity
-@Table(name = "Task")
+@Table(name = "`Task`")
 class Task(
 
     @Column
@@ -165,7 +161,7 @@ class Task(
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinTable(
-        name = "TaskTag",
+        name = "`TaskTag`",
         joinColumns = [JoinColumn(name = "task_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "tag_id", referencedColumnName = "id")]
     )
@@ -200,13 +196,13 @@ class Task(
 
 
 @Entity
-@Table(name = "TaskComment")
+@Table(name = "`TaskComment`")
 class TaskComment(
 
     @Column
     val description: String,
 
-    @Column
+    @Column(name = "user_id")
     val userId: Long,
 
     @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.PERSIST])
@@ -231,7 +227,7 @@ class TaskComment(
 }
 
 @Entity
-@Table(name = "Image")
+@Table(name = "`Images`")
 class Image(
 
     @Lob
@@ -246,7 +242,7 @@ class Image(
 
 
 @Entity
-@Table(name = "Tag")
+@Table(name = "`Tag`")
 class Tag(
 
     @Column
@@ -259,7 +255,7 @@ class Tag(
 
 
 @Entity
-@Table(name = "TaskGroup")
+@Table(name = "`TaskGroup`")
 class TaskGroup(
 
     @Column
@@ -287,7 +283,7 @@ class TaskGroup(
 
 
 @Entity
-@Table(name = "Role")
+@Table(name = "`Role`")
 class Role(
     val role: String,
 
