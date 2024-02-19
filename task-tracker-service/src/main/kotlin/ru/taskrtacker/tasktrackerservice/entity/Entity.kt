@@ -154,7 +154,7 @@ class Task(
     @Enumerated(EnumType.STRING)
     val priority: TaskPriority,
 
-    @Column
+    @Column(name = "`deadLine`")
     val deadLine: LocalDateTime,
 
     @Column(name = "assignee_id")
@@ -228,7 +228,7 @@ class TaskComment(
 }
 
 @Entity
-@Table(name = "`Images`")
+@Table(name = "`Image`")
 class Image(
 
     @Lob
