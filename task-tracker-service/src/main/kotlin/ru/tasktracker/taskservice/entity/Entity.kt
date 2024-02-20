@@ -53,14 +53,8 @@ class User(
     @Column
     val password: String,
 
-    @Column
-    val email: String,
-
     @Column(name = "email_confirmed")
-    val emailConfirmed: Boolean,
-
-    @Column
-    val about: String?,
+    var emailConfirmed: Boolean,
 
     @Column
     val blocked: Boolean,
@@ -75,7 +69,7 @@ class User(
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    val profile: UserProfile,
+    var profile: UserProfile,
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val tasks: MutableSet<Task> = mutableSetOf()
@@ -112,13 +106,19 @@ class UserProfile(
     val user: User? = null,
 
     @Column
-    val name: String,
+    var name: String,
 
     @Column(name = "last_name")
-    val lastName: String,
+    var lastName: String,
 
     @Column
-    val birthday: LocalDateTime,
+    var birthday: LocalDateTime,
+
+    @Column
+    var email: String,
+
+    @Column
+    var about: String?,
 
     @Lob
     @Column
