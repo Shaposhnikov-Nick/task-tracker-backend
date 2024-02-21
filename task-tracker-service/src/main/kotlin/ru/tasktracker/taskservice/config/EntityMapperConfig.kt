@@ -4,8 +4,10 @@ import cz.encircled.skom.MappingConfig
 import cz.encircled.skom.SimpleKotlinObjectMapper
 import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration
+import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.dto.UserDto
 import ru.tasktracker.taskservice.dto.UserProfileDto
+import ru.tasktracker.taskservice.entity.Task
 import ru.tasktracker.taskservice.entity.User
 import ru.tasktracker.taskservice.entity.UserProfile
 
@@ -18,6 +20,7 @@ class EntityMapperConfig {
         cz.encircled.skom.Extensions.mapper = SimpleKotlinObjectMapper {
             userDtoToUser()
             userProfileDtoToUserProfile()
+            taskToTaskDto()
         }
     }
 
@@ -37,6 +40,16 @@ class EntityMapperConfig {
             addPropertyMappings {
                 mapOf(
                     "avatar" to null
+                )
+            }
+        }
+    }
+
+    private fun MappingConfig.taskToTaskDto() {
+        forClasses(Task::class, TaskDto::class) {
+            addPropertyMappings {
+                mapOf(
+                    "userId" to it.user?.id
                 )
             }
         }
