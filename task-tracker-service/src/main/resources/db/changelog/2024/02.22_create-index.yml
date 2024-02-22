@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 22.02.2024_create-index-task_user_id
+      author: Shaposhnikov Nikolay
+      changes:
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: user_id
+            indexName: task_user_id
+            schemaName: task_tracker
+            tableName: Task
