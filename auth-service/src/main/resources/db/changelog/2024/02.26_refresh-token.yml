@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 26.02.2024_create-table-RefreshToken
+      author: Shaposhnikov Nikolay
+      changes:
+        - createTable:
+            tableName: RefreshToken
+            schemaName: task_tracker
+            columns:
+              - column:
+                  name: login
+                  type: varchar(100)
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_RefreshToken
+              - column:
+                  name: refresh_token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_date
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_by
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
