@@ -1,11 +1,12 @@
-package ru.tasktracker.taskservice.service
+package ru.tasktracker.authservice.service
 
 import cz.encircled.skom.Extensions.mapTo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.tasktracker.taskservice.dto.UserDto
-import ru.tasktracker.taskservice.entity.User
-import ru.tasktracker.taskservice.repository.UserRepository
+import ru.tasktracker.authservice.dto.UserDto
+import ru.tasktracker.authservice.entity.User
+import ru.tasktracker.authservice.repository.UserRepository
+
 
 interface UserService {
 
@@ -15,7 +16,7 @@ interface UserService {
 
     fun updateUserProfile(userDto: UserDto): UserDto
 
-    fun changePassword(userDto: UserDto) : UserDto // TODO
+    fun changePassword(userDto: UserDto): UserDto // TODO
 }
 
 @Service
@@ -27,7 +28,7 @@ class UserServiceImpl(
     override fun createUser(userDto: UserDto): UserDto {
         val user = userDto.mapTo<User>()
         user.addRole(userDto.roles!!.first().mapTo())
-        return userRepository.saveAndFlush(user).mapTo()
+        return userRepository.saveAndFlush(user).mapTo<UserDto>()
     }
 
     @Transactional(readOnly = true)
@@ -37,7 +38,8 @@ class UserServiceImpl(
 
     @Transactional
     override fun updateUserProfile(userDto: UserDto): UserDto {
-        val user = userRepository.findUserById(userDto.id!!) ?: throw RuntimeException("User with id ${userDto.id} not found")
+        val user = userRepository.findUserById(userDto.id!!)
+            ?: throw RuntimeException("User with id ${userDto.id} not found")
 
         user.profile.about = userDto.profile.about
         user.profile.name = userDto.profile.name
@@ -48,7 +50,7 @@ class UserServiceImpl(
             user.emailConfirmed = false
         }
 
-         return userRepository.saveAndFlush(user).mapTo()
+        return userRepository.saveAndFlush(user).mapTo()
     }
 
     override fun changePassword(userDto: UserDto): UserDto {
