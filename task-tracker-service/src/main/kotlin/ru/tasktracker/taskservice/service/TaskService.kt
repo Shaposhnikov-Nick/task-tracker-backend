@@ -2,10 +2,8 @@ package ru.tasktracker.taskservice.service
 
 import cz.encircled.skom.Extensions.mapTo
 import org.springframework.stereotype.Service
-import ru.tasktracker.taskservice.dto.JwtUser
 import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.repository.TaskRepository
-import ru.tasktracker.taskservice.repository.UserRepository
 
 interface TaskService {
 
