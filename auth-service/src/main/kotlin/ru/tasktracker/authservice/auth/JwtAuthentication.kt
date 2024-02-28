@@ -8,12 +8,12 @@ import org.springframework.security.core.userdetails.UserDetails
 
 
 class JwtAuthentication(
-    private var authenticated: Boolean = false,
-    private val userName: String = ""
+    private var authenticated: Boolean = false
 ) : Authentication {
     var roles: MutableSet<SimpleGrantedAuthority> = mutableSetOf()
 
-    override fun getName(): String = userName
+    lateinit var user: AuthenticatedUser
+    override fun getName(): String = user.login
 
     override fun getAuthorities(): MutableSet<out GrantedAuthority> = roles
 
@@ -21,7 +21,7 @@ class JwtAuthentication(
 
     override fun getDetails(): Any = Any()
 
-    override fun getPrincipal(): Any = Any()
+    override fun getPrincipal(): Any = user
 
     override fun isAuthenticated(): Boolean = authenticated
 
@@ -52,3 +52,9 @@ data class JwtUserDetails(
 
     override fun isEnabled(): Boolean = false
 }
+
+data class AuthenticatedUser(
+    val id: Long,
+    val login: String,
+    val emailConfirmed: Boolean
+)
