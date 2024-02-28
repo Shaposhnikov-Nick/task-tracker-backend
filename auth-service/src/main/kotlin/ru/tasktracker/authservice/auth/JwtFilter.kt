@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import ru.tasktracker.authservice.exception.AuthenticationException
 import ru.tasktracker.authservice.exception.ExceptionResponse
+import ru.tasktracker.authservice.extentions.getString
 
 
 /**
@@ -24,7 +25,7 @@ class JwtFilter(
 ) : OncePerRequestFilter() {
 
     val authorizationHeader = "Authorization"
-    val notSecuredEndpoints = listOf("/auth/login", "/auth/token")
+    val notSecuredEndpoints = listOf("/auth/login", "/auth/token", "/users/reg")
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -42,8 +43,8 @@ class JwtFilter(
             }
         } catch (e: AuthenticationException) {
             val errorResponse = ExceptionResponse(
-               HttpStatus.UNAUTHORIZED.value(),
-               HttpStatus.UNAUTHORIZED.name,
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.name,
                 e.message,
             )
             response.contentType = "application/json"
@@ -52,10 +53,19 @@ class JwtFilter(
         }
     }
 
-    fun generateAuthentication(claims: Claims): JwtAuthentication {
-        val jwtInfoToken = JwtAuthentication(true, claims.subject)
-        jwtInfoToken.roles = getRoles(claims)
-        return jwtInfoToken
+    private fun generateAuthentication(claims: Claims): JwtAuthentication {
+        val authentication = JwtAuthentication(true)
+        authentication.user = userFromClaims(claims)
+        authentication.roles = getRoles(claims)
+        return authentication
+    }
+
+    private fun userFromClaims(claims: Claims): AuthenticatedUser {
+        return AuthenticatedUser(
+            claims.getString("sub").toLong(),
+            claims.getString("login"),
+            claims.getString("emailConfirmed") == "true"
+        )
     }
 
     fun getRoles(claims: Claims): MutableSet<SimpleGrantedAuthority> {
