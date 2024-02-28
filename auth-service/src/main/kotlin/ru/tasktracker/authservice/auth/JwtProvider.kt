@@ -46,6 +46,7 @@ class JwtProviderImpl(
             .setSubject(user.id.toString())
             .claim("login", user.login)
             .claim("roles", user.roles.map { it.authority })
+            .claim("emailConfirmed", user.emailConfirmed.toString())
             .setExpiration(accessExpiration(jwtProperty.accessExpire))
             .signWith(jwtAccessSecret)
             .compact()
