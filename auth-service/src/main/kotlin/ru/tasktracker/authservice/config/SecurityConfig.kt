@@ -2,6 +2,7 @@ package ru.tasktracker.authservice.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -35,6 +36,7 @@ class SecurityConfig(
                 authorize
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/login")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/token")).permitAll()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/users/reg")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/*/**")).permitAll()
