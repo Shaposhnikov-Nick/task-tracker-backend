@@ -1,6 +1,7 @@
 package ru.tasktracker.authservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.tasktracker.authservice.dto.UserDto
@@ -10,7 +11,7 @@ import ru.tasktracker.authservice.repository.UserRepository
 
 interface UserService {
 
-    fun createUser(userDto: UserDto): UserDto
+    fun registerUser(userDto: UserDto): UserDto
 
     fun getUser(id: Long): UserDto
 
@@ -21,11 +22,13 @@ interface UserService {
 
 @Service
 class UserServiceImpl(
-    val userRepository: UserRepository
+    val userRepository: UserRepository,
+    val passwordEncoder: PasswordEncoder
 ) : UserService {
 
     @Transactional
-    override fun createUser(userDto: UserDto): UserDto {
+    override fun registerUser(userDto: UserDto): UserDto {
+        userDto.password = passwordEncoder.encode(userDto.password)
         val user = userDto.mapTo<User>()
         user.addRole(userDto.roles!!.first().mapTo())
         return userRepository.saveAndFlush(user).mapTo<UserDto>()
