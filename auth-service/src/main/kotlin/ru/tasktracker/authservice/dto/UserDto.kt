@@ -5,35 +5,19 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import cz.encircled.skom.Convertable
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Null
 import jakarta.validation.constraints.Size
 import org.springframework.format.annotation.DateTimeFormat
-import ru.tasktracker.authservice.entity.Role
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
 import java.time.LocalDateTime
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class JwtUser(
-    val login: String,
-    val password: String,
-    val email: String,
-    val emailConfirmed: Boolean,
-    val about: String,
-    val blocked: Boolean,
-    val role: Role,
-    val profile: UserProfileDto,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class UserDto(
 
     @field:Null(groups = [ValidationGroups.Create::class], message = "Id must be null")
-    @field:NotNull(groups = [ValidationGroups.Update::class], message = "Id can't be null")
-    val id: Long? = null,
+    var id: Long? = null,
 
     @field:NotBlank(groups = [ValidationGroups.Create::class], message = "Login can't be empty")
     @field:Size(groups = [ValidationGroups.Create::class], min = 5, max = 50, message = "Login must be between 5 and 50 characters")
