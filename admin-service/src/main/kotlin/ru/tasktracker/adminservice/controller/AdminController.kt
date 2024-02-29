@@ -1,6 +1,7 @@
 package ru.tasktracker.adminservice.controller
 
 import jakarta.validation.Valid
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -26,11 +27,12 @@ interface AdminController {
 @RequestMapping("admin")
 class AdminControllerImpl(
     val adminService: AdminService
-): AdminController {
+) : AdminController {
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("role")
     override fun addRole(roleDto: RoleDto): List<RoleDto> {
-       return adminService.addRole(roleDto)
+        return adminService.addRole(roleDto)
     }
 
     override fun changeUserRole() {
