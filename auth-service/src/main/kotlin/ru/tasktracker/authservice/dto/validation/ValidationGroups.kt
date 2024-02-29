@@ -1,4 +1,4 @@
-package ru.tasktracker.taskservice.dto.validation
+package ru.tasktracker.authservice.dto.validation
 
 object ValidationGroups {
     interface Create
