@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.tasktracker.authservice.auth.AuthenticatedUser
 import ru.tasktracker.authservice.dto.UserDto
+import ru.tasktracker.authservice.dto.validation.ValidationGroups
 import ru.tasktracker.authservice.service.UserService
-import ru.tasktracker.taskservice.dto.validation.ValidationGroups
 
 
 @Validated

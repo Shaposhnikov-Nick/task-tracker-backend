@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Null
 import jakarta.validation.constraints.Size
 import org.springframework.format.annotation.DateTimeFormat
-import ru.tasktracker.taskservice.dto.validation.ValidationGroups
+import ru.tasktracker.authservice.dto.validation.ValidationGroups
 import java.time.LocalDateTime
 
 
