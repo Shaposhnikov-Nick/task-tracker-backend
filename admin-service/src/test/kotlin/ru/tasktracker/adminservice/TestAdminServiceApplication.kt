@@ -1,4 +1,4 @@
-package ru.taskrtacker.adminservice
+package ru.tasktracker.adminservice
 
 import org.springframework.boot.fromApplication
 import org.springframework.boot.test.context.TestConfiguration

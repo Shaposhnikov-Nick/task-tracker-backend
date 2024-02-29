@@ -1,4 +1,4 @@
-package ru.taskrtacker.adminservice
+package ru.tasktracker.adminservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
