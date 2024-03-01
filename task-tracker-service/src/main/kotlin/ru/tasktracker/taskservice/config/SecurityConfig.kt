@@ -7,10 +7,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import ru.tasktracker.taskservice.auth.JwtFilter
+
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    val jwtFilter: JwtFilter
+) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -23,9 +27,9 @@ class SecurityConfig {
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                it.anyRequest().permitAll() // TODO: change after add authentication filter
+                it.anyRequest().authenticated()
             }
-//            .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter::class.java) // TODO: add JWT authentication filter
+            .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 
