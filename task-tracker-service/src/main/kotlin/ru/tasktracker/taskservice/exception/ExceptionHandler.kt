@@ -11,6 +11,9 @@ import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import java.time.LocalDateTime
 
+
+data class AuthenticationException(override val message: String): RuntimeException(message)
+
 @ControllerAdvice
 class GlobalExceptionHandler {
 

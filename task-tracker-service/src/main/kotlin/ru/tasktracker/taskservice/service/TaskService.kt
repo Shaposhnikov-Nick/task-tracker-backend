@@ -22,8 +22,7 @@ class TaskServiceImpl(
     }
 
     override fun getAllTasks(userId: Long): List<TaskDto> {
-        val t = taskRepository.findAllByUserId(userId)
-        return t.mapTo()
+        return taskRepository.findAllByUserId(userId).mapTo()
     }
 
 }
