@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.security.core.context.SecurityContextHolder
+import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import java.util.*
 
 @Configuration
@@ -20,16 +21,15 @@ class AuditConfig {
         override fun getCurrentAuditor(): Optional<String> {
             val auth = SecurityContextHolder.getContext().authentication
 
-            return if (auth == null || !auth.isAuthenticated)
-                throw IllegalStateException("No user in SecurityContext!")
-            else {
+            return if (auth != null && auth.isAuthenticated) {
                 val principal = auth.principal
-                if (principal is org.springframework.security.core.userdetails.User) {
-                    Optional.of(principal.username)
+                if (principal is AuthenticatedUser) {
+                    Optional.of(principal.login)
                 } else {
-                    Optional.of("none") // TODO: fix with real user
+                    Optional.of("none")
                 }
-
+            } else {
+                Optional.of("none")
             }
         }
     }
