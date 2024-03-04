@@ -289,7 +289,7 @@ class TaskGroup(
 class Role(
 
     @Column
-    val role: String,
+    val name: String,
 
     @ManyToMany(mappedBy = "roles")
     val users: MutableSet<User> = mutableSetOf()
