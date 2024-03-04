@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import ru.tasktracker.adminservice.dto.ChangeUserRoleAction
+import ru.tasktracker.adminservice.dto.ChangeUserRolesDto
 import ru.tasktracker.adminservice.dto.RoleDto
 import ru.tasktracker.adminservice.service.AdminService
 
@@ -16,7 +18,7 @@ interface AdminController {
 
     fun addRole(@RequestBody @Valid roleDto: RoleDto): List<RoleDto>
 
-    fun changeUserRole()
+    fun addUserRole(@RequestBody @Valid changedRoles: ChangeUserRolesDto): List<RoleDto>
 
     fun blockUser()
 
@@ -30,19 +32,25 @@ class AdminControllerImpl(
 ) : AdminController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("role")
+    @PostMapping("add-role")
     override fun addRole(roleDto: RoleDto): List<RoleDto> {
         return adminService.addRole(roleDto)
     }
 
-    override fun changeUserRole() {
-        TODO("Not yet implemented")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("add-user-role")
+    override fun addUserRole(changedRoles: ChangeUserRolesDto): List<RoleDto> {
+        return adminService.changeUserRole(changedRoles, ChangeUserRoleAction.ADD)
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("block")
     override fun blockUser() {
         TODO("Not yet implemented")
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("unblock")
     override fun unblockUser() {
         TODO("Not yet implemented")
     }
