@@ -30,7 +30,9 @@ class UserServiceImpl(
     override fun registerUser(userDto: UserDto): UserDto {
         userDto.password = passwordEncoder.encode(userDto.password)
         val user = userDto.mapTo<User>()
-        user.addRole(userDto.roles!!.first().mapTo())
+        userDto.roles!!.forEach {
+            user.addRole(it.mapTo())
+        }
         return userRepository.saveAndFlush(user).mapTo<UserDto>()
     }
 
