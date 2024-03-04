@@ -286,7 +286,8 @@ class TaskGroup(
 @Entity
 @Table(name = "`Role`")
 class Role(
-    val role: String,
+
+    val name: String,
 
     @ManyToMany(mappedBy = "roles")
     val users: MutableSet<User> = mutableSetOf()
