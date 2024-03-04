@@ -37,7 +37,7 @@ data class UserDto(
 
 data class RoleDto(
     val id: Long,
-    val role: String
+    val name: String
 ) : Convertable
 
 

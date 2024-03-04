@@ -30,7 +30,7 @@ class EntityMapperConfig {
             addPropertyMappings {
                 mapOf(
                     "pass" to it.password,
-                    "roles" to it.roles.map { roleEntity -> SimpleGrantedAuthority(roleEntity.role) }.toMutableSet()
+                    "roles" to it.roles.map { roleEntity -> SimpleGrantedAuthority(roleEntity.name) }.toMutableSet()
                 )
             }
         }
