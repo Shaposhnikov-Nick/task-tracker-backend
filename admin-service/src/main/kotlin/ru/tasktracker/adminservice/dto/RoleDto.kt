@@ -12,6 +12,11 @@ data class RoleDto(
     val id: Long? = null,
 
     @field:NotEmpty
-    val role: String
+    val name: String
 
 ): Convertable
+
+enum class ChangeUserRoleAction {
+    ADD,
+    REMOVE
+}
