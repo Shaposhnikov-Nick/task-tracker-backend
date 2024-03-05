@@ -27,7 +27,7 @@ abstract class BaseEntity(
     var updateDate: LocalDateTime? = null,
 
     @LastModifiedBy
-    @Column(name = "updated_by", updatable = false)
+    @Column(name = "updated_by")
     var updatedBy: String? = null
 ) {
     override fun equals(other: Any?): Boolean {

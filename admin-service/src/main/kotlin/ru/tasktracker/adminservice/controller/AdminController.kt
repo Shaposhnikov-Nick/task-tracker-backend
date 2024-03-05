@@ -23,7 +23,7 @@ interface AdminController {
 
     fun blockUser(@PathVariable userId: Long)
 
-    fun unblockUser()
+    fun unblockUser(@PathVariable userId: Long)
 }
 
 @RestController
@@ -47,13 +47,13 @@ class AdminControllerImpl(
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("block/{userId}")
     override fun blockUser(userId: Long) {
-        adminService.blockUser(userId)
+        adminService.blockUser(userId, true)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("unblock")
-    override fun unblockUser() {
-        TODO("Not yet implemented")
+    @PostMapping("unblock/{userId}")
+    override fun unblockUser(userId: Long) {
+        adminService.blockUser(userId, false)
     }
 
 }
