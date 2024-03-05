@@ -1,10 +1,14 @@
 package ru.tasktracker.authservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ru.tasktracker.authservice.dto.PaginationParams
 import ru.tasktracker.authservice.dto.UserDto
+import ru.tasktracker.authservice.dto.UsersPageResponse
 import ru.tasktracker.authservice.entity.User
 import ru.tasktracker.authservice.repository.UserRepository
 
@@ -14,6 +18,8 @@ interface UserService {
     fun registerUser(userDto: UserDto): UserDto
 
     fun getUser(id: Long): UserDto
+
+    fun getAllUsers(paginationParams: PaginationParams): UsersPageResponse
 
     fun updateUserProfile(userDto: UserDto): UserDto
 
@@ -39,6 +45,18 @@ class UserServiceImpl(
     @Transactional(readOnly = true)
     override fun getUser(id: Long): UserDto {
         return userRepository.findUserById(id)?.mapTo() ?: throw RuntimeException("User with id $id not found")
+    }
+
+    @Transactional(readOnly = true)
+    override fun getAllUsers(paginationParams: PaginationParams): UsersPageResponse {
+        val page = PageRequest.of(paginationParams.pageNumber - 1, paginationParams.pageSize, Sort.by("id"))
+        val usersPage = userRepository.findAll(page)
+        return UsersPageResponse(
+            usersPage.content.mapTo(),
+            usersPage.number + 1,
+            usersPage.totalPages,
+            usersPage.totalElements
+        )
     }
 
     @Transactional

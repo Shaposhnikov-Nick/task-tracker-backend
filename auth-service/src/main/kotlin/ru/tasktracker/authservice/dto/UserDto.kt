@@ -3,10 +3,7 @@ package ru.tasktracker.authservice.dto
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import cz.encircled.skom.Convertable
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Null
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.*
 import org.springframework.format.annotation.DateTimeFormat
 import ru.tasktracker.authservice.dto.validation.ValidationGroups
 import java.time.LocalDateTime
@@ -64,3 +61,19 @@ data class UserProfileDto(
 
     val avatar: ByteArray? = null
 ) : Convertable
+
+data class PaginationParams(
+
+    @field:Min(1)
+    val pageNumber: Int = 1,
+
+    @field:Min(1)
+    val pageSize: Int = 1
+)
+
+data class UsersPageResponse(
+    val content: List<UserDto>,
+    val page: Int,
+    val totalPages: Int,
+    val totalItems: Long
+)

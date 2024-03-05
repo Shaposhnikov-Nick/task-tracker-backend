@@ -1,5 +1,6 @@
 package ru.tasktracker.authservice.controller
 
+import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.tasktracker.authservice.auth.AuthenticatedUser
+import ru.tasktracker.authservice.dto.PaginationParams
 import ru.tasktracker.authservice.dto.UserDto
+import ru.tasktracker.authservice.dto.UsersPageResponse
 import ru.tasktracker.authservice.dto.validation.ValidationGroups
 import ru.tasktracker.authservice.service.UserService
 
@@ -28,7 +31,7 @@ interface UserController {
 
     fun getCurrentUser(@AuthenticationPrincipal authUser: AuthenticatedUser): UserDto
 
-    fun getAllUsers(): List<UserDto>
+    fun getAllUsers(@Valid paginationParams: PaginationParams): UsersPageResponse
 
     fun getUser(@PathVariable userId: Long): UserDto
 
@@ -60,8 +63,8 @@ class UserControllerImpl(
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
-    override fun getAllUsers(): List<UserDto> {
-        TODO("Not yet implemented")
+    override fun getAllUsers(paginationParams: PaginationParams): UsersPageResponse {
+        return userService.getAllUsers(paginationParams)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
