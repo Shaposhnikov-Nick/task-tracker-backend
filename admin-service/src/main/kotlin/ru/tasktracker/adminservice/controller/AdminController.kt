@@ -3,6 +3,7 @@ package ru.tasktracker.adminservice.controller
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,7 +21,7 @@ interface AdminController {
 
     fun addUserRole(@RequestBody @Valid changedRoles: ChangeUserRolesDto): List<RoleDto>
 
-    fun blockUser()
+    fun blockUser(@PathVariable userId: Long)
 
     fun unblockUser()
 }
@@ -44,9 +45,9 @@ class AdminControllerImpl(
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("block")
-    override fun blockUser() {
-        TODO("Not yet implemented")
+    @PostMapping("block/{userId}")
+    override fun blockUser(userId: Long) {
+        adminService.blockUser(userId)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")

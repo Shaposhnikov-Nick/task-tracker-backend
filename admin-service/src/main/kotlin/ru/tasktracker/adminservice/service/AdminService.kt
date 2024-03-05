@@ -15,6 +15,7 @@ import ru.tasktracker.adminservice.repository.UserRepository
 interface AdminService {
     fun addRole(roleDto: RoleDto): List<RoleDto>
     fun changeUserRole(changedRoles: ChangeUserRolesDto, action: ChangeUserRoleAction): List<RoleDto>
+    fun blockUser(userId: Long)
 
 }
 
@@ -48,6 +49,16 @@ class AdminServiceImpl(
 
         userRepository.saveAndFlush(user)
         return roleRepository.findRolesByUserId(changedRoles.userId).mapTo()
+    }
+
+    @Transactional
+    override fun blockUser(userId: Long) {
+        val user = userRepository.findUserById(userId)
+            ?: throw UserException("User with id $userId not found")
+
+        user.blocked = true
+
+        userRepository.saveAndFlush(user)
     }
 
 }
