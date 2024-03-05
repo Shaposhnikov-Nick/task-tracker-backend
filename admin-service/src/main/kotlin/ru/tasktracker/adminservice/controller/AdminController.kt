@@ -20,6 +20,7 @@ interface AdminController {
     fun addRole(@RequestBody @Valid roleDto: RoleDto): List<RoleDto>
 
     fun addUserRole(@RequestBody @Valid changedRoles: ChangeUserRolesDto): List<RoleDto>
+    fun removeUserRole(@RequestBody @Valid changedRoles: ChangeUserRolesDto): List<RoleDto>
 
     fun blockUser(@PathVariable userId: Long)
 
@@ -42,6 +43,12 @@ class AdminControllerImpl(
     @PostMapping("add-user-role")
     override fun addUserRole(changedRoles: ChangeUserRolesDto): List<RoleDto> {
         return adminService.changeUserRole(changedRoles, ChangeUserRoleAction.ADD)
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("remove-user-role")
+    override fun removeUserRole(changedRoles: ChangeUserRolesDto): List<RoleDto> {
+        return adminService.changeUserRole(changedRoles, ChangeUserRoleAction.REMOVE)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
