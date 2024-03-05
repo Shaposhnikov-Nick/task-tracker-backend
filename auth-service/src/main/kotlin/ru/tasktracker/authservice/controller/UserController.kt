@@ -4,6 +4,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,7 +26,11 @@ interface UserController {
         @RequestBody @Validated(ValidationGroups.Update::class) userDto: UserDto
     ): UserDto
 
-    fun getUser(@AuthenticationPrincipal authUser: AuthenticatedUser): UserDto
+    fun getCurrentUser(@AuthenticationPrincipal authUser: AuthenticatedUser): UserDto
+
+    fun getAllUsers(): List<UserDto>
+
+    fun getUser(@PathVariable userId: Long): UserDto
 
 }
 
@@ -48,9 +53,21 @@ class UserControllerImpl(
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping
-    override fun getUser(authUser: AuthenticatedUser): UserDto {
+    @GetMapping("/current")
+    override fun getCurrentUser(authUser: AuthenticatedUser): UserDto {
         return userService.getUser(authUser.id)
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping
+    override fun getAllUsers(): List<UserDto> {
+        TODO("Not yet implemented")
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("user/{userId}")
+    override fun getUser(userId: Long): UserDto {
+        return userService.getUser(userId)
     }
 
 }
