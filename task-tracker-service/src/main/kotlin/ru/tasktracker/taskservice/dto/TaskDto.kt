@@ -5,14 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import cz.encircled.skom.Convertable
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Null
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
 import ru.tasktracker.taskservice.entity.*
 import java.time.LocalDateTime
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class TaskDto(
 
+    @field:Null(groups = [ValidationGroups.Create::class], message = "Id must be null")
     @field:NotBlank(groups = [ValidationGroups.Update::class], message = "Id can't be null")
     val id: Long? = null,
 
@@ -31,13 +34,13 @@ class TaskDto(
     val userId: Long? = null,
     val parentId: Long? = null,
 
-    @field:NotBlank(
+    @field:NotNull(
         groups = [ValidationGroups.Create::class, ValidationGroups.Update::class],
         message = "Status must not be blank"
     )
     val status: TaskStatus,
 
-    @field:NotBlank(
+    @field:NotNull(
         groups = [ValidationGroups.Create::class, ValidationGroups.Update::class],
         message = "Priority must not be blank"
     )
@@ -48,7 +51,12 @@ class TaskDto(
         message = "Deadline must not be null"
     )
     val deadLine: LocalDateTime,
-    val assigneeId: Long? = null,
+
+    @field:NotNull(
+        groups = [ValidationGroups.Create::class, ValidationGroups.Update::class],
+        message = "Assignee id must not be null"
+    )
+    val assigneeId: Long,
     val taskComments: Set<TaskComment> = mutableSetOf(),
     var createdDate: LocalDateTime? = null,
     var updateDate: LocalDateTime? = null,

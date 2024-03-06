@@ -4,9 +4,11 @@ package ru.tasktracker.taskservice.controller
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -57,17 +59,17 @@ class TaskControllerImpl(
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{taskId}")
     override fun getTask(authUser: AuthenticatedUser, taskId: Long): TaskDto {
-        TODO("Not yet implemented")
+       return taskService.getTask(authUser, taskId)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping
+    @PutMapping
     override fun updateTask(authUser: AuthenticatedUser): TaskDto {
         TODO("Not yet implemented")
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping
+    @DeleteMapping
     override fun deleteTask(authUser: AuthenticatedUser): List<TaskDto> {
         TODO("Not yet implemented")
     }
