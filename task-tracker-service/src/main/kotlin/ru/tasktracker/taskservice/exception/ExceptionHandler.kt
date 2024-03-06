@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 
 
 data class AuthenticationException(override val message: String): RuntimeException(message)
+data class UserException(override val message: String): RuntimeException(message)
 
 @ControllerAdvice
 class GlobalExceptionHandler {
