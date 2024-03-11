@@ -19,6 +19,8 @@ interface TaskService {
 
     fun getTask(authUser: AuthenticatedUser, taskId: Long): TaskDto
 
+    fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto
+
 }
 
 @Service
@@ -47,6 +49,24 @@ class TaskServiceImpl(
 
         return user.tasks.firstOrNull { it.id == taskId }?.mapTo<TaskDto>()
             ?: throw TaskException("Task with id $taskId not found")
+    }
+
+    @Transactional
+    override fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto {
+        val user = userRepository.findUserById(authUser.id)
+            ?: throw UserException("User with id ${authUser.id} not found")
+
+        val task = user.tasks.firstOrNull { it.id == taskDto.id }
+            ?: throw TaskException("Task with id ${taskDto.id} for user ${authUser.id} not found")
+
+        task.title = taskDto.title
+        task.description = taskDto.description
+        task.status = taskDto.status
+        task.priority = taskDto.priority
+        task.deadLine = taskDto.deadLine
+        task.assigneeId = taskDto.assigneeId
+
+        return taskRepository.saveAndFlush(task).mapTo()
     }
 
 }

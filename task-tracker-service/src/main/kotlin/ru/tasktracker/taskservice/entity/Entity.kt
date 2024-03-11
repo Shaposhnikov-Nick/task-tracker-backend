@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 abstract class BaseEntity(
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
@@ -132,10 +132,10 @@ class UserProfile(
 class Task(
 
     @Column
-    val title: String,
+    var title: String,
 
     @Column
-    val description: String,
+    var description: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
@@ -149,16 +149,16 @@ class Task(
     val parentId: Long?,
 
     @Enumerated(EnumType.STRING)
-    val status: TaskStatus,
+    var status: TaskStatus,
 
     @Enumerated(EnumType.STRING)
-    val priority: TaskPriority,
+    var priority: TaskPriority,
 
     @Column(name = "`deadLine`")
-    val deadLine: LocalDateTime,
+    var deadLine: LocalDateTime,
 
     @Column(name = "assignee_id")
-    val assigneeId: Long,
+    var assigneeId: Long,
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinTable(

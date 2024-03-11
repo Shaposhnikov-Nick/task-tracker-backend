@@ -31,7 +31,11 @@ interface TaskController {
         @PathVariable taskId: Long
     ): TaskDto
 
-    fun updateTask(@AuthenticationPrincipal authUser: AuthenticatedUser): TaskDto
+    fun updateTask(
+        @AuthenticationPrincipal authUser: AuthenticatedUser,
+        @RequestBody @Validated(ValidationGroups.Update::class) taskDto: TaskDto
+    ): TaskDto
+
     fun deleteTask(@AuthenticationPrincipal authUser: AuthenticatedUser): List<TaskDto>
 
 
@@ -59,13 +63,13 @@ class TaskControllerImpl(
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{taskId}")
     override fun getTask(authUser: AuthenticatedUser, taskId: Long): TaskDto {
-       return taskService.getTask(authUser, taskId)
+        return taskService.getTask(authUser, taskId)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping
-    override fun updateTask(authUser: AuthenticatedUser): TaskDto {
-        TODO("Not yet implemented")
+    override fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto {
+        return taskService.updateTask(authUser, taskDto)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
