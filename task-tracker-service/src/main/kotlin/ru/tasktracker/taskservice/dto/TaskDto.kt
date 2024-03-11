@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 class TaskDto(
 
     @field:Null(groups = [ValidationGroups.Create::class], message = "Id must be null")
-    @field:NotBlank(groups = [ValidationGroups.Update::class], message = "Id can't be null")
+    @field:NotNull(groups = [ValidationGroups.Update::class], message = "Id can't be null")
     val id: Long? = null,
 
     @field:NotBlank(
