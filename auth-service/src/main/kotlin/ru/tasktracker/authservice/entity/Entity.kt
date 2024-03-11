@@ -60,7 +60,7 @@ class User(
     @Column
     val blocked: Boolean,
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "`UserRole`",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
@@ -68,11 +68,11 @@ class User(
     )
     val roles: MutableSet<Role> = mutableSetOf(),
 
-    @OneToOne(cascade = [CascadeType.ALL])
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     var profile: UserProfile,
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val tasks: MutableSet<Task> = mutableSetOf()
 
 ) : BaseEntity(), Convertable {
