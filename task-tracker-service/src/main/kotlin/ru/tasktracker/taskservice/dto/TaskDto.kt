@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class TaskDto(
+data class TaskDto(
 
     @field:Null(groups = [ValidationGroups.Create::class], message = "Id must be null")
     @field:NotNull(groups = [ValidationGroups.Update::class], message = "Id can't be null")
