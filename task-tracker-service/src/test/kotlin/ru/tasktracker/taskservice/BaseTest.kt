@@ -1,6 +1,5 @@
 package ru.tasktracker.taskservice
 
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
@@ -43,15 +42,7 @@ abstract class BaseTest {
 
     @BeforeEach
     open fun init() {
-        val newUser = User(
-            "test",
-            "test",
-            false,
-            false,
-            mutableSetOf(Role("ADMIN")),
-            UserProfile(null, "name", "lastname", LocalDateTime.now(), "test@test.ru", null, null)
-        )
-        user = userRepository.saveAndFlush(newUser)
+        user = userRepository.findUserById(1)!!
 
         val newTask = Task(
             title = "Test title",
@@ -65,17 +56,13 @@ abstract class BaseTest {
             taskComments = mutableSetOf(),
             parentId = null
         )
+
         task = taskRepository.saveAndFlush(newTask)
 
         val auth = JwtAuthentication(true)
         auth.user = AuthenticatedUser(user.id!!, user.login, true)
         SecurityContextHolder.getContext().authentication = auth
         authUser = SecurityContextHolder.getContext().authentication.principal as AuthenticatedUser
-    }
-
-    @AfterEach
-    open fun destroy() {
-        userRepository.deleteById(user.id!!)
     }
 
 }
