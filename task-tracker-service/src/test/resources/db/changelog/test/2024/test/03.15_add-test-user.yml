@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15.03.2024_add_test-user
+      author: Shaposhnikov Nikolay
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            path: data/test_user.sql
+            relativeToChangelogFile: true
