@@ -128,11 +128,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>me.paulschwarz</groupId>
-            <artifactId>spring-dotenv</artifactId>
-            <version>${spring-dotenv.version}</version>
-        </dependency>
-        <dependency>
             <groupId>cz.encircled</groupId>
             <artifactId>skom</artifactId>
             <version>${skom.version}</version>
