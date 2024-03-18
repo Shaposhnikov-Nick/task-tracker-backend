@@ -42,10 +42,22 @@ class TaskServiceImpl(
 
     @Transactional
     override fun createTask(authUser: AuthenticatedUser, taskDto: TaskDto): List<TaskDto> {
+        val task = taskDto.mapTo<Task>()
+
         val user = userRepository.findUserById(authUser.id)
             ?: throw UserException("User with id ${authUser.id} not found")
-        user.addTask(taskDto.mapTo<Task>())
-        return userRepository.saveAndFlush(user).tasks.mapTo<TaskDto>().toList()
+
+        user.addTask(task)
+        userRepository.saveAndFlush(user)
+
+        taskDto.groupId?.let {
+            val group = taskGroupRepository.findTaskGroupById(taskDto.groupId)
+                ?: throw TaskGroupException("Group with id ${taskDto.groupId} not found")
+            group.addTask(task)
+            taskGroupRepository.saveAndFlush(group)
+        }
+
+        return getAllTasks(authUser.id)
     }
 
     @Transactional(readOnly = true)
