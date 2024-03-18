@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
+import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.entity.Task
 import ru.tasktracker.taskservice.exception.TaskException
+import ru.tasktracker.taskservice.exception.TaskGroupException
 import ru.tasktracker.taskservice.exception.UserException
+import ru.tasktracker.taskservice.repository.TaskGroupRepository
 import ru.tasktracker.taskservice.repository.TaskRepository
 import ru.tasktracker.taskservice.repository.UserRepository
 
@@ -21,12 +24,15 @@ interface TaskService {
 
     fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto
 
+    fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto
+
 }
 
 @Service
 class TaskServiceImpl(
     val taskRepository: TaskRepository,
-    val userRepository: UserRepository
+    val userRepository: UserRepository,
+    val taskGroupRepository: TaskGroupRepository
 ) : TaskService {
 
     @Transactional(readOnly = true)
@@ -67,6 +73,11 @@ class TaskServiceImpl(
         task.assigneeId = taskDto.assigneeId
 
         return taskRepository.saveAndFlush(task).mapTo()
+    }
+
+    @Transactional
+    override fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto {
+        return taskGroupRepository.saveAndFlush(taskGroupDto.mapTo()).mapTo()
     }
 
 }

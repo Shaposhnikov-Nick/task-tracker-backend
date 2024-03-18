@@ -18,13 +18,12 @@ class EntityMapperConfig {
         }
     }
 
-
-
     private fun MappingConfig.taskToTaskDto() {
         forClasses(Task::class, TaskDto::class) {
             addPropertyMappings {
                 mapOf(
-                    "userId" to it.user?.id
+                    "userId" to it.user?.id,
+                    "groupId" to it.group?.id
                 )
             }
         }

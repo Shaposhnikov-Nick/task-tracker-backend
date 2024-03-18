@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import cz.encircled.skom.Convertable
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Null
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
@@ -30,7 +31,7 @@ data class TaskDto(
         message = "Description must not be blank"
     )
     val description: String,
-    val group: TaskGroup? = null,
+    val groupId: Long? = null,
     val userId: Long? = null,
     val parentId: Long? = null,
 
@@ -58,6 +59,32 @@ data class TaskDto(
     )
     val assigneeId: Long,
     val taskComments: Set<TaskComment> = mutableSetOf(),
+    var createdDate: LocalDateTime? = null,
+    var updateDate: LocalDateTime? = null,
+    var updatedBy: String? = null
+) : Convertable
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class TaskGroupDto(
+
+    @field:Null(groups = [ValidationGroups.Create::class], message = "Id must be null")
+    @field:NotNull(groups = [ValidationGroups.Update::class], message = "Id can't be null")
+    val id: Long? = null,
+
+    @field:NotEmpty(
+        groups = [ValidationGroups.Create::class, ValidationGroups.Update::class],
+        message = "Title must not be null or empty"
+    )
+    val title: String,
+
+    @field:NotEmpty(
+        groups = [ValidationGroups.Create::class, ValidationGroups.Update::class],
+        message = "Description must not be null or empty"
+    )
+    val description: String,
+    val tasks: MutableSet<Task>? = null,
     var createdDate: LocalDateTime? = null,
     var updateDate: LocalDateTime? = null,
     var updatedBy: String? = null

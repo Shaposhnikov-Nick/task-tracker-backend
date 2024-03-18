@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
+import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
 import ru.tasktracker.taskservice.service.TaskService
 
@@ -37,6 +38,8 @@ interface TaskController {
     ): TaskDto
 
     fun deleteTask(@AuthenticationPrincipal authUser: AuthenticatedUser): List<TaskDto>
+
+    fun addTaskGroup(@RequestBody @Validated(ValidationGroups.Create::class) taskGroupDto: TaskGroupDto): TaskGroupDto
 
 
 }
@@ -76,6 +79,12 @@ class TaskControllerImpl(
     @DeleteMapping
     override fun deleteTask(authUser: AuthenticatedUser): List<TaskDto> {
         TODO("Not yet implemented")
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PostMapping("/groups")
+    override fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto {
+        return taskService.addTaskGroup(taskGroupDto)
     }
 
 }
