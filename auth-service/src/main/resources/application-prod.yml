@@ -1,0 +1,48 @@
+server:
+  port: ${PORT}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: task_tracker
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    show-sql: false
+
+  # Security
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+    default-schema: task_tracker
+    liquibase-schema: task_tracker
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+# Jwt
+jwt:
+  access-secret: ${ACCESS_SECRET}
+  access-expire: ${ACCESS_SECRET_EXPIRE}
+  refresh-secret: ${REFRESH_SECRET}
+  refresh-expire: ${REFRESH_SECRET_EXPIRE}
