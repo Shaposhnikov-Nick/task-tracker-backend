@@ -71,7 +71,7 @@ class User(
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     var profile: UserProfile,
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     val tasks: MutableSet<Task> = mutableSetOf()
 
 ) : BaseEntity(), Convertable {

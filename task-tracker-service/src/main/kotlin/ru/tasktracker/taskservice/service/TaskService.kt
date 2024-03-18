@@ -24,6 +24,8 @@ interface TaskService {
 
     fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto
 
+    fun deleteTask(authUser: AuthenticatedUser, taskId: Long): List<TaskDto>
+
     fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto
 
 }
@@ -85,6 +87,26 @@ class TaskServiceImpl(
         task.assigneeId = taskDto.assigneeId
 
         return taskRepository.saveAndFlush(task).mapTo()
+    }
+
+    @Transactional
+    override fun deleteTask(authUser: AuthenticatedUser, taskId: Long): List<TaskDto> {
+        val user = userRepository.findUserById(authUser.id)
+            ?: throw UserException("User with id ${authUser.id} not found")
+
+        val deletedTask = user.tasks.firstOrNull { it.id == taskId }
+            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+
+        deletedTask.group?.let {
+            val group = taskGroupRepository.findTaskGroupById(deletedTask.group!!.id!!)
+                ?: throw TaskGroupException("Group with id ${deletedTask.group!!.id!!} not found")
+            group.removeTask(deletedTask)
+            taskGroupRepository.saveAndFlush(group)
+        }
+
+        user.removeTask(deletedTask)
+        userRepository.saveAndFlush(user)
+        return getAllTasks(user.id!!)
     }
 
     @Transactional

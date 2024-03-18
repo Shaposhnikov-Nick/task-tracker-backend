@@ -37,7 +37,7 @@ interface TaskController {
         @RequestBody @Validated(ValidationGroups.Update::class) taskDto: TaskDto
     ): TaskDto
 
-    fun deleteTask(@AuthenticationPrincipal authUser: AuthenticatedUser): List<TaskDto>
+    fun deleteTask(@AuthenticationPrincipal authUser: AuthenticatedUser, @PathVariable taskId: Long): List<TaskDto>
 
     fun addTaskGroup(@RequestBody @Validated(ValidationGroups.Create::class) taskGroupDto: TaskGroupDto): TaskGroupDto
 
@@ -76,9 +76,9 @@ class TaskControllerImpl(
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @DeleteMapping
-    override fun deleteTask(authUser: AuthenticatedUser): List<TaskDto> {
-        TODO("Not yet implemented")
+    @DeleteMapping("/{taskId}")
+    override fun deleteTask(authUser: AuthenticatedUser, taskId: Long): List<TaskDto> {
+        return taskService.deleteTask(authUser, taskId)
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
