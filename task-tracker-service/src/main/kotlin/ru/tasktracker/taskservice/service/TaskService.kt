@@ -2,6 +2,7 @@ package ru.tasktracker.taskservice.service
 
 import cz.encircled.skom.Extensions.mapTo
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
@@ -29,6 +30,8 @@ interface TaskService {
     fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto
 
     fun deleteTaskGroup(groupId: Long): String
+
+    fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long): TaskDto
 
 }
 
@@ -131,6 +134,24 @@ class TaskServiceImpl(
         taskGroupRepository.delete(deletedGroup)
 
         return "Task group $groupId deleted"
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    override fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long): TaskDto {
+        val group = taskGroupRepository.findTaskGroupById(groupId)
+            ?: throw TaskGroupException("Group with id $groupId not found")
+
+        val user = userRepository.findUserById(authUser.id)
+            ?: throw UserException("User with id ${authUser.id} not found")
+
+        val task = user.tasks.firstOrNull { it.id == taskId }
+            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+
+        group.addTask(task)
+        taskGroupRepository.saveAndFlush(group)
+
+        return task.mapTo()
+
     }
 
 }
