@@ -34,6 +34,8 @@ interface TaskService {
 
     fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User? = null): TaskDto
 
+    fun removeTaskFromGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User? = null): TaskDto
+
 }
 
 @Service
@@ -101,10 +103,7 @@ class TaskServiceImpl(
             ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
 
         deletedTask.group?.let {
-            val group = taskGroupRepository.findTaskGroupById(deletedTask.group!!.id!!)
-                ?: throw TaskGroupException("Group with id ${deletedTask.group!!.id!!} not found")
-            group.removeTask(deletedTask)
-            taskGroupRepository.saveAndFlush(group)
+            removeTaskFromGroup(authUser, deletedTask.group?.id!!, taskId, user)
         }
 
         user.removeTask(deletedTask)
@@ -150,6 +149,23 @@ class TaskServiceImpl(
 
         return task.mapTo()
 
+    }
+
+    @Transactional
+    override fun removeTaskFromGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
+        val group = taskGroupRepository.findTaskGroupById(groupId)
+            ?: throw TaskGroupException("Group with id $groupId not found")
+
+        val userEntity = user ?: userRepository.findUserById(authUser.id)
+        ?: throw UserException("User with id ${authUser.id} not found")
+
+        val task = userEntity.tasks.firstOrNull { it.id == taskId }
+            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+
+        group.removeTask(task)
+        taskGroupRepository.saveAndFlush(group)
+
+        return task.mapTo()
     }
 
 }
