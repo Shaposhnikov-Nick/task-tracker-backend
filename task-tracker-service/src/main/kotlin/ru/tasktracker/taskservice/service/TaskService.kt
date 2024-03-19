@@ -28,6 +28,8 @@ interface TaskService {
 
     fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto
 
+    fun deleteTaskGroup(groupId: Long): String
+
 }
 
 @Service
@@ -112,6 +114,23 @@ class TaskServiceImpl(
     @Transactional
     override fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto {
         return taskGroupRepository.saveAndFlush(taskGroupDto.mapTo()).mapTo()
+    }
+
+    @Transactional
+    override fun deleteTaskGroup(groupId: Long): String {
+        val deletedGroup = taskGroupRepository.findTaskGroupById(groupId)
+            ?: throw TaskGroupException("Group with id $groupId not found")
+
+        val tasks = deletedGroup.tasks.toList()
+
+        tasks.forEach {
+            deletedGroup.removeTask(it)
+        }
+
+        taskRepository.saveAllAndFlush(tasks)
+        taskGroupRepository.delete(deletedGroup)
+
+        return "Task group $groupId deleted"
     }
 
 }

@@ -265,7 +265,7 @@ class TaskGroup(
     @Column
     val description: String,
 
-    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = [CascadeType.MERGE, CascadeType.PERSIST])
     val tasks: MutableSet<Task> = mutableSetOf()
 
 ) : BaseEntity(), Convertable {

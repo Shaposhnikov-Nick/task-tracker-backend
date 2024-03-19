@@ -41,6 +41,7 @@ interface TaskController {
 
     fun addTaskGroup(@RequestBody @Validated(ValidationGroups.Create::class) taskGroupDto: TaskGroupDto): TaskGroupDto
 
+    fun deleteTaskGroup(@PathVariable groupId: Long): String
 
 }
 
@@ -85,6 +86,12 @@ class TaskControllerImpl(
     @PostMapping("/groups")
     override fun addTaskGroup(taskGroupDto: TaskGroupDto): TaskGroupDto {
         return taskService.addTaskGroup(taskGroupDto)
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @DeleteMapping("/groups/{groupId}")
+    override fun deleteTaskGroup(groupId: Long): String {
+        return taskService.deleteTaskGroup(groupId)
     }
 
 }
