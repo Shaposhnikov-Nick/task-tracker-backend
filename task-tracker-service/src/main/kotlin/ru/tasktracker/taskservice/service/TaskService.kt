@@ -8,6 +8,7 @@ import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.entity.Task
+import ru.tasktracker.taskservice.entity.TaskGroup
 import ru.tasktracker.taskservice.entity.User
 import ru.tasktracker.taskservice.exception.TaskException
 import ru.tasktracker.taskservice.exception.TaskGroupException
@@ -53,9 +54,7 @@ class TaskServiceImpl(
     @Transactional
     override fun createTask(authUser: AuthenticatedUser, taskDto: TaskDto): List<TaskDto> {
         val task = taskDto.mapTo<Task>()
-
-        val user = userRepository.findUserById(authUser.id)
-            ?: throw UserException("User with id ${authUser.id} not found")
+        val user = findUserById(authUser.id)
 
         user.addTask(task)
         userRepository.saveAndFlush(user)
@@ -69,20 +68,14 @@ class TaskServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getTask(authUser: AuthenticatedUser, taskId: Long): TaskDto {
-        val user = userRepository.findUserById(authUser.id)
-            ?: throw UserException("User with id ${authUser.id} not found")
-
-        return user.tasks.firstOrNull { it.id == taskId }?.mapTo<TaskDto>()
-            ?: throw TaskException("Task with id $taskId not found")
+        val user = findUserById(authUser.id)
+        return findTaskByUserAndId(user, taskId).mapTo()
     }
 
     @Transactional
     override fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto {
-        val user = userRepository.findUserById(authUser.id)
-            ?: throw UserException("User with id ${authUser.id} not found")
-
-        val task = user.tasks.firstOrNull { it.id == taskDto.id }
-            ?: throw TaskException("Task with id ${taskDto.id} for user ${authUser.id} not found")
+        val user = findUserById(authUser.id)
+        val task = findTaskByUserAndId(user, taskDto.id!!)
 
         task.title = taskDto.title
         task.description = taskDto.description
@@ -96,11 +89,8 @@ class TaskServiceImpl(
 
     @Transactional
     override fun deleteTask(authUser: AuthenticatedUser, taskId: Long): List<TaskDto> {
-        val user = userRepository.findUserById(authUser.id)
-            ?: throw UserException("User with id ${authUser.id} not found")
-
-        val deletedTask = user.tasks.firstOrNull { it.id == taskId }
-            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+        val user = findUserById(authUser.id)
+        val deletedTask = findTaskByUserAndId(user, taskId)
 
         deletedTask.group?.let {
             removeTaskFromGroup(authUser, deletedTask.group?.id!!, taskId, user)
@@ -118,9 +108,7 @@ class TaskServiceImpl(
 
     @Transactional
     override fun deleteTaskGroup(groupId: Long): String {
-        val deletedGroup = taskGroupRepository.findTaskGroupById(groupId)
-            ?: throw TaskGroupException("Group with id $groupId not found")
-
+        val deletedGroup = findTaskGroupById(groupId)
         val tasks = deletedGroup.tasks.toList()
 
         tasks.forEach {
@@ -135,37 +123,40 @@ class TaskServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
-        val group = taskGroupRepository.findTaskGroupById(groupId)
-            ?: throw TaskGroupException("Group with id $groupId not found")
-
-        val userEntity = user ?: userRepository.findUserById(authUser.id)
-        ?: throw UserException("User with id ${authUser.id} not found")
-
-        val task = userEntity.tasks.firstOrNull { it.id == taskId }
-            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+        val group = findTaskGroupById(groupId)
+        val userEntity = user ?: findUserById(authUser.id)
+        val task = findTaskByUserAndId(userEntity, taskId)
 
         group.addTask(task)
         taskGroupRepository.saveAndFlush(group)
 
         return task.mapTo()
-
     }
 
     @Transactional
     override fun removeTaskFromGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
-        val group = taskGroupRepository.findTaskGroupById(groupId)
-            ?: throw TaskGroupException("Group with id $groupId not found")
-
-        val userEntity = user ?: userRepository.findUserById(authUser.id)
-        ?: throw UserException("User with id ${authUser.id} not found")
-
-        val task = userEntity.tasks.firstOrNull { it.id == taskId }
-            ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
+        val group = findTaskGroupById(groupId)
+        val userEntity = user ?: findUserById(authUser.id)
+        val task = findTaskByUserAndId(userEntity, taskId)
 
         group.removeTask(task)
         taskGroupRepository.saveAndFlush(group)
 
         return task.mapTo()
+    }
+
+    private fun findUserById(userId: Long): User {
+        return userRepository.findUserById(userId) ?: throw UserException("User with id $userId not found")
+    }
+
+    private fun findTaskGroupById(groupId: Long): TaskGroup {
+        return taskGroupRepository.findTaskGroupById(groupId)
+            ?: throw TaskGroupException("Group with id $groupId not found")
+    }
+
+    private fun findTaskByUserAndId(user: User, taskId: Long): Task {
+        return user.tasks.firstOrNull { it.id == taskId }
+            ?: throw TaskException("Task with id $taskId for user ${user.id} not found")
     }
 
 }
