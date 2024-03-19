@@ -84,7 +84,7 @@ data class TaskGroupDto(
         message = "Description must not be null or empty"
     )
     val description: String,
-    val tasks: MutableSet<Task>? = null,
+    val tasks: List<TaskDto>? = null,
     var createdDate: LocalDateTime? = null,
     var updateDate: LocalDateTime? = null,
     var updatedBy: String? = null

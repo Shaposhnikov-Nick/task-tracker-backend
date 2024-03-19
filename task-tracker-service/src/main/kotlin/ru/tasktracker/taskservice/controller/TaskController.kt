@@ -43,6 +43,8 @@ interface TaskController {
 
     fun deleteTaskGroup(@PathVariable groupId: Long): String
 
+    fun getTaskGroups(): List<TaskGroupDto>
+
     fun addTaskToGroup(
         @AuthenticationPrincipal authUser: AuthenticatedUser,
         @PathVariable groupId: Long,
@@ -104,6 +106,12 @@ class TaskControllerImpl(
     @DeleteMapping("/groups/{groupId}")
     override fun deleteTaskGroup(groupId: Long): String {
         return taskService.deleteTaskGroup(groupId)
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/groups")
+    override fun getTaskGroups(): List<TaskGroupDto> {
+        return taskService.getTaskGroups()
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

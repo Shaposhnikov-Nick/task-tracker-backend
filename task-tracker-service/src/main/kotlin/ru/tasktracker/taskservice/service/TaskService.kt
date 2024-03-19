@@ -33,6 +33,8 @@ interface TaskService {
 
     fun deleteTaskGroup(groupId: Long): String
 
+    fun getTaskGroups(): List<TaskGroupDto>
+
     fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User? = null): TaskDto
 
     fun removeTaskFromGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User? = null): TaskDto
@@ -119,6 +121,11 @@ class TaskServiceImpl(
         taskGroupRepository.delete(deletedGroup)
 
         return "Task group $groupId deleted"
+    }
+
+    @Transactional(readOnly = true)
+    override fun getTaskGroups(): List<TaskGroupDto> {
+        return taskGroupRepository.findAll().mapTo()
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
