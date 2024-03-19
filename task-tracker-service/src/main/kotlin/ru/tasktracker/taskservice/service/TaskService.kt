@@ -8,6 +8,7 @@ import ru.tasktracker.taskservice.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.entity.Task
+import ru.tasktracker.taskservice.entity.User
 import ru.tasktracker.taskservice.exception.TaskException
 import ru.tasktracker.taskservice.exception.TaskGroupException
 import ru.tasktracker.taskservice.exception.UserException
@@ -31,7 +32,7 @@ interface TaskService {
 
     fun deleteTaskGroup(groupId: Long): String
 
-    fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long): TaskDto
+    fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User? = null): TaskDto
 
 }
 
@@ -58,10 +59,7 @@ class TaskServiceImpl(
         userRepository.saveAndFlush(user)
 
         taskDto.groupId?.let {
-            val group = taskGroupRepository.findTaskGroupById(taskDto.groupId)
-                ?: throw TaskGroupException("Group with id ${taskDto.groupId} not found")
-            group.addTask(task)
-            taskGroupRepository.saveAndFlush(group)
+            addTaskToGroup(authUser, taskDto.groupId, task.id!!, user)
         }
 
         return getAllTasks(authUser.id)
@@ -137,14 +135,14 @@ class TaskServiceImpl(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long): TaskDto {
+    override fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
         val group = taskGroupRepository.findTaskGroupById(groupId)
             ?: throw TaskGroupException("Group with id $groupId not found")
 
-        val user = userRepository.findUserById(authUser.id)
-            ?: throw UserException("User with id ${authUser.id} not found")
+        val userEntity = user ?: userRepository.findUserById(authUser.id)
+        ?: throw UserException("User with id ${authUser.id} not found")
 
-        val task = user.tasks.firstOrNull { it.id == taskId }
+        val task = userEntity.tasks.firstOrNull { it.id == taskId }
             ?: throw TaskException("Task with id $taskId for user ${authUser.id} not found")
 
         group.addTask(task)
