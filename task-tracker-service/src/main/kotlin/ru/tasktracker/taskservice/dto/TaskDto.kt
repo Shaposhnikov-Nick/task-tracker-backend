@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Null
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
 import ru.tasktracker.taskservice.entity.*
+import java.io.Serializable
 import java.time.LocalDateTime
 
 
@@ -62,7 +63,7 @@ data class TaskDto(
     var createdDate: LocalDateTime? = null,
     var updateDate: LocalDateTime? = null,
     var updatedBy: String? = null
-) : Convertable
+) : Convertable, Serializable
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -88,4 +89,4 @@ data class TaskGroupDto(
     var createdDate: LocalDateTime? = null,
     var updateDate: LocalDateTime? = null,
     var updatedBy: String? = null
-) : Convertable
+) : Convertable, Serializable

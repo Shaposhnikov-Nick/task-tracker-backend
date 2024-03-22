@@ -1,6 +1,7 @@
 package ru.tasktracker.taskservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -49,6 +50,7 @@ class TaskServiceImpl(
 ) : TaskService {
 
     @Transactional(readOnly = true)
+    @Cacheable("tasks", unless = "#result.empty")
     override fun getAllTasks(userId: Long): List<TaskDto> {
         return taskRepository.findAllByUserId(userId).mapTo()
     }
