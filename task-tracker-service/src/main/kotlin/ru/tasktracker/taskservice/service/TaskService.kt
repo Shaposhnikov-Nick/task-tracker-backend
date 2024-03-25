@@ -1,6 +1,8 @@
 package ru.tasktracker.taskservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -50,12 +52,13 @@ class TaskServiceImpl(
 ) : TaskService {
 
     @Transactional(readOnly = true)
-    @Cacheable("tasks", unless = "#result.empty")
+    @Cacheable(cacheNames = ["tasks"], unless = "#result.empty")
     override fun getAllTasks(userId: Long): List<TaskDto> {
         return taskRepository.findAllByUserId(userId).mapTo()
     }
 
     @Transactional
+    @CachePut(cacheNames = ["tasks"], key = "#authUser.id")
     override fun createTask(authUser: AuthenticatedUser, taskDto: TaskDto): List<TaskDto> {
         val task = taskDto.mapTo<Task>()
         val user = findUserById(authUser.id)
@@ -71,12 +74,14 @@ class TaskServiceImpl(
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("task", key = "#authUser.id + '-' + #taskId" )
     override fun getTask(authUser: AuthenticatedUser, taskId: Long): TaskDto {
         val user = findUserById(authUser.id)
         return findTaskByUserAndId(user, taskId).mapTo()
     }
 
     @Transactional
+    @CachePut(cacheNames = ["task"], key = "#authUser.id + '-' + #taskDto.id")
     override fun updateTask(authUser: AuthenticatedUser, taskDto: TaskDto): TaskDto {
         val user = findUserById(authUser.id)
         val task = findTaskByUserAndId(user, taskDto.id!!)
@@ -92,6 +97,7 @@ class TaskServiceImpl(
     }
 
     @Transactional
+    @CacheEvict(cacheNames = ["tasks"], key = "#authUser.id")
     override fun deleteTask(authUser: AuthenticatedUser, taskId: Long): List<TaskDto> {
         val user = findUserById(authUser.id)
         val deletedTask = findTaskByUserAndId(user, taskId)
@@ -131,6 +137,7 @@ class TaskServiceImpl(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @CachePut(cacheNames = ["task"], key = "#authUser.id + '-' + #taskId")
     override fun addTaskToGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
         val group = findTaskGroupById(groupId)
         val userEntity = user ?: findUserById(authUser.id)
@@ -143,6 +150,7 @@ class TaskServiceImpl(
     }
 
     @Transactional
+    @CachePut(cacheNames = ["task"], key = "#authUser.id + '-' + #taskId")
     override fun removeTaskFromGroup(authUser: AuthenticatedUser, groupId: Long, taskId: Long, user: User?): TaskDto {
         val group = findTaskGroupById(groupId)
         val userEntity = user ?: findUserById(authUser.id)

@@ -24,6 +24,11 @@ spring:
       host: redis
       port: ${REDIS_CONTAINER_PORT}
 
+  cache:
+    cache-names: tasks, task
+    redis:
+      time-to-live:  ${CACHE_TIME}
+
   # Security
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
