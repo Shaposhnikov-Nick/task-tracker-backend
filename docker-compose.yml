@@ -33,6 +33,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - ACCESS_SECRET=${ACCESS_SECRET}
       - REDIS_CONTAINER_PORT=${REDIS_CONTAINER_PORT}
+      - CACHE_TIME=${CACHE_TIME}
     depends_on:
       database:
         condition: service_healthy
