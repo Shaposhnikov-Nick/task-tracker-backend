@@ -1,11 +1,15 @@
 # Task Tracker backend
 
-### Сборка проекта
+
+Backend for the Task tracker application. 
+It is a microservice application. 
+The next step in development is the creation of a frontend (planned stack - ReactJS).
+### Build project
 ```
 mvn clean install
 ``` 
 
-### Запуск проекта
+### Run project
 ```
 docker-compose up -d
 ``` 
