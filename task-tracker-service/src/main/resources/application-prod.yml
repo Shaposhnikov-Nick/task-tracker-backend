@@ -21,8 +21,9 @@ spring:
 
   data:
     redis:
-      host: redis
+      host: ${REDIS_HOST}
       port: ${REDIS_CONTAINER_PORT}
+      password: ${REDIS_PASSWORD}
 
   cache:
     cache-names: tasks, task
