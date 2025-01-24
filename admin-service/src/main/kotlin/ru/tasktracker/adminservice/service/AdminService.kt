@@ -1,11 +1,15 @@
 package ru.tasktracker.adminservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.slf4j.LoggerFactory
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.tasktracker.adminservice.dto.ChangeUserRoleAction
 import ru.tasktracker.adminservice.dto.ChangeUserRolesDto
 import ru.tasktracker.adminservice.dto.RoleDto
+import ru.tasktracker.adminservice.entity.Role
 import ru.tasktracker.adminservice.exception.RoleException
 import ru.tasktracker.adminservice.exception.UserException
 import ru.tasktracker.adminservice.repository.RoleRepository
@@ -24,6 +28,8 @@ class AdminServiceImpl(
     val roleRepository: RoleRepository,
     val userRepository: UserRepository
 ) : AdminService {
+
+    val log = LoggerFactory.getLogger(this::class.java)
 
     @Transactional
     override fun addRole(roleDto: RoleDto): List<RoleDto> {
@@ -59,6 +65,15 @@ class AdminServiceImpl(
         user.blocked = block
 
         userRepository.saveAndFlush(user)
+    }
+
+    /**
+     * TODO: fix roles later
+     */
+    @EventListener(ApplicationReadyEvent::class)
+    fun initRoles() {
+        log.info("Init admin and user roles")
+        roleRepository.saveAll(listOf(Role("admin"), Role("user")))
     }
 
 }
