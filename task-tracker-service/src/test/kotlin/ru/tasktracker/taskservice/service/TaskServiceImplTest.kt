@@ -16,7 +16,7 @@ class TaskServiceImplTest : BaseTest() {
 
     @Test
     fun getAllTasks() {
-        val tasks = taskService.getAllTasks(user.id!!)
+        val tasks = taskService.getAllTasks(authUser.id)
 
         assertThat(tasks)
             .isNotNull()
