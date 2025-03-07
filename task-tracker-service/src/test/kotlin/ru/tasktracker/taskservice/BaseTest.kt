@@ -8,8 +8,8 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.MountableFile
-import ru.tasktracker.taskservice.auth.AuthenticatedUser
-import ru.tasktracker.taskservice.auth.JwtAuthentication
+import ru.tasktracker.taskservice.config.auth.AuthenticatedUser
+import ru.tasktracker.taskservice.config.auth.JwtAuthentication
 import ru.tasktracker.taskservice.entity.*
 import ru.tasktracker.taskservice.repository.TaskRepository
 import ru.tasktracker.taskservice.repository.UserRepository
