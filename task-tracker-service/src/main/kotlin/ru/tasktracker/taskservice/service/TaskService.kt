@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import ru.tasktracker.taskservice.auth.AuthenticatedUser
+import ru.tasktracker.taskservice.config.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.entity.Task

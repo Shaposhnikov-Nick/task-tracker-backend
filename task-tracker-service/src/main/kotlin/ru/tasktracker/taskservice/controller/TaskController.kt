@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.tasktracker.taskservice.auth.AuthenticatedUser
+import ru.tasktracker.taskservice.config.auth.AuthenticatedUser
 import ru.tasktracker.taskservice.dto.TaskDto
 import ru.tasktracker.taskservice.dto.TaskGroupDto
 import ru.tasktracker.taskservice.dto.validation.ValidationGroups
