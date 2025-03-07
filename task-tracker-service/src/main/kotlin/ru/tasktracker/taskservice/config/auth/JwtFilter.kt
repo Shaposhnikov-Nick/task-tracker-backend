@@ -1,4 +1,4 @@
-package ru.tasktracker.taskservice.auth
+package ru.tasktracker.taskservice.config.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Claims

@@ -1,4 +1,4 @@
-package ru.tasktracker.taskservice.auth
+package ru.tasktracker.taskservice.config.auth
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
@@ -11,9 +11,7 @@ import javax.crypto.SecretKey
 
 
 interface JwtProvider {
-
     fun validateAccessToken(accessToken: String): Boolean
-
     fun getAccessClaims(token: String): Claims
 }
 

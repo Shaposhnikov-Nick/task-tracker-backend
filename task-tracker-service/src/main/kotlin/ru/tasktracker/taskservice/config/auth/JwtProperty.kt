@@ -1,4 +1,4 @@
-package ru.tasktracker.taskservice.auth
+package ru.tasktracker.taskservice.config.auth
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
