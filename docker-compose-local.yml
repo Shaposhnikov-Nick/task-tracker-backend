@@ -77,26 +77,6 @@ services:
     networks:
       - task-service-network
 
-  admin-service:
-    build: ./admin-service/
-    container_name: admin-service
-    restart: always
-    environment:
-      - PORT=${ADMIN_SERVICE_CONTAINER_PORT}
-      - DB_URL=${DB_URL}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - ACCESS_SECRET=${ACCESS_SECRET}
-    depends_on:
-      database:
-        condition: service_healthy
-      task-service:
-        condition: service_started
-    ports:
-      - ${ADMIN_SERVICE_HOST_PORT}:${ADMIN_SERVICE_CONTAINER_PORT}
-    networks:
-      - task-service-network
-
 volumes:
   task-service-db:
   
