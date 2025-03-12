@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: RefreshToken
-            schemaName: task_tracker
+            schemaName: auth_service
             columns:
               - column:
                   name: login

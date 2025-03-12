@@ -13,15 +13,10 @@ import ru.tasktracker.authservice.service.AuthService
 
 @Validated
 interface AuthController {
-
     fun login(@RequestBody @Valid userAuthRequest: UserAuthRequest): JwtUserTokenResponse
-
     fun logout(@RequestBody @Valid userAuthRequest: UserAuthRequest)
-
     fun getNewAccessToken(@RequestBody @Valid refreshJwtRequest: RefreshJwtRequest): JwtUserTokenResponse
-
     fun getNewRefreshToken(@RequestBody @Valid refreshJwtRequest: RefreshJwtRequest): JwtUserTokenResponse
-
 }
 
 

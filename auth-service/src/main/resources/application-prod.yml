@@ -11,7 +11,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: task_tracker
+#        default_schema: auth_service
     hibernate:
       ddl-auto: validate
       naming:
@@ -29,8 +29,8 @@ spring:
     enabled: true
     user: ${DB_USER}
     password: ${DB_PASSWORD}
-    default-schema: task_tracker
-    liquibase-schema: task_tracker
+    default-schema: auth_service
+    liquibase-schema: auth_service
 
   cloud:
     config:

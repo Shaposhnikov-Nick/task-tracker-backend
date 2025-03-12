@@ -14,17 +14,11 @@ import javax.crypto.SecretKey
 
 
 interface JwtProvider {
-
     fun generateAccessToken(user: JwtUserDetails): String
-
     fun generateRefreshToken(user: JwtUserDetails): String
-
     fun validateAccessToken(accessToken: String): Boolean
-
     fun validateRefreshToken(refreshToken: String): Boolean
-
     fun getAccessClaims(token: String): Claims
-
     fun getRefreshClaims(token: String): Claims
 }
 
