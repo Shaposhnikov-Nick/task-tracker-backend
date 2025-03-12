@@ -19,7 +19,7 @@ class User(
     var emailConfirmed: Boolean,
 
     @Column
-    val blocked: Boolean,
+    var blocked: Boolean,
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

@@ -38,6 +38,7 @@ class SecurityConfig(
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/*/**")).permitAll()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/users/reg")).permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

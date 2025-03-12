@@ -32,10 +32,6 @@ data class UserDto(
     var updatedBy: String? = null
 ) : Convertable
 
-data class RoleDto(
-    val id: Long,
-    val name: String
-) : Convertable
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -76,3 +72,27 @@ data class UsersPageResponse(
     val totalPages: Int,
     val totalItems: Long
 )
+
+data class ChangeUserRolesDto(
+
+    @field:NotNull(message = "User id must not be null")
+    val userId: Long,
+
+    @field:NotEmpty(message = "List of roles must not be empty")
+    val roles: Set<RoleDto>
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class RoleDto(
+    val id: Long? = null,
+
+    @field:NotEmpty
+    val name: String
+
+): Convertable
+
+enum class ChangeUserRoleAction {
+    ADD,
+    REMOVE
+}

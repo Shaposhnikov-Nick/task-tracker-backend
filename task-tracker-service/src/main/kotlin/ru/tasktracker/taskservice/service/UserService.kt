@@ -1,36 +1,42 @@
 package ru.tasktracker.taskservice.service
 
 import cz.encircled.skom.Extensions.mapTo
+import org.slf4j.LoggerFactory
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.tasktracker.taskservice.dto.PaginationParams
-import ru.tasktracker.taskservice.dto.UserDto
-import ru.tasktracker.taskservice.dto.UsersPageResponse
+import ru.tasktracker.taskservice.dto.*
+import ru.tasktracker.taskservice.entity.Role
 import ru.tasktracker.taskservice.entity.User
+import ru.tasktracker.taskservice.exception.RoleException
+import ru.tasktracker.taskservice.exception.UserException
+import ru.tasktracker.taskservice.repository.RoleRepository
 import ru.tasktracker.taskservice.repository.UserRepository
 
 
 interface UserService {
-
     fun registerUser(userDto: UserDto): UserDto
-
     fun getUser(id: Long): UserDto
-
     fun getAllUsers(paginationParams: PaginationParams): UsersPageResponse
-
     fun updateUserProfile(userDto: UserDto): UserDto
-
     fun changePassword(userDto: UserDto): UserDto // TODO
+    fun addRole(roleDto: RoleDto): List<RoleDto>
+    fun changeUserRole(changedRoles: ChangeUserRolesDto, action: ChangeUserRoleAction): List<RoleDto>
+    fun blockUser(userId: Long, block: Boolean)
 }
 
 @Service
 class UserServiceImpl(
     val userRepository: UserRepository,
+    val roleRepository: RoleRepository,
     val passwordEncoder: PasswordEncoder
 ) : UserService {
+
+    val log = LoggerFactory.getLogger(this::class.java)
 
     @Transactional
     override fun registerUser(userDto: UserDto): UserDto {
@@ -78,6 +84,51 @@ class UserServiceImpl(
 
     override fun changePassword(userDto: UserDto): UserDto {
         TODO("Not yet implemented")
+    }
+
+    @Transactional
+    override fun addRole(roleDto: RoleDto): List<RoleDto> {
+        if (roleRepository.existsRoleByName(roleDto.name))
+            throw RoleException("Role ${roleDto.name} already exists")
+
+        roleRepository.save(roleDto.mapTo())
+        return roleRepository.findAll().mapTo()
+    }
+
+    @Transactional
+    override fun changeUserRole(changedRoles: ChangeUserRolesDto, action: ChangeUserRoleAction): List<RoleDto> {
+        val user = userRepository.findUserById(changedRoles.userId)
+            ?: throw UserException("User with id ${changedRoles.userId} not found")
+
+        changedRoles.roles.forEach {
+            if (action == ChangeUserRoleAction.ADD)
+                user.addRole(it.mapTo())
+
+            if (action == ChangeUserRoleAction.REMOVE)
+                user.removeRole(it.mapTo())
+        }
+
+        userRepository.saveAndFlush(user)
+        return roleRepository.findRolesByUserId(changedRoles.userId).mapTo()
+    }
+
+    @Transactional
+    override fun blockUser(userId: Long, block: Boolean) {
+        val user = userRepository.findUserById(userId)
+            ?: throw UserException("User with id $userId not found")
+
+        user.blocked = block
+
+        userRepository.saveAndFlush(user)
+    }
+
+    /**
+     * TODO: fix roles later
+     */
+    @EventListener(ApplicationReadyEvent::class)
+    fun initRoles() {
+        log.info("Init admin and user roles")
+        roleRepository.saveAll(listOf(Role("admin"), Role("user")))
     }
 
 }
