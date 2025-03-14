@@ -77,6 +77,19 @@ services:
     networks:
       - task-service-network
 
+  gateway-service:
+    build: ./gateway-service/
+    container_name: gateway-service
+    restart: always
+    environment:
+      - PORT=${GATEWAY_SERVICE_CONTAINER_PORT}
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_CONTAINER_PORT}
+      - TASK_SERVICE_PORT=${TASK_SERVICE_CONTAINER_PORT}
+    ports:
+      - ${GATEWAY_SERVICE_HOST_PORT}:${GATEWAY_SERVICE_CONTAINER_PORT}
+    networks:
+      - task-service-network
+
 volumes:
   task-service-db:
   
