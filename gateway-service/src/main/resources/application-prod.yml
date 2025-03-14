@@ -1,0 +1,24 @@
+server:
+  port: ${PORT}
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowed-headers:
+              - "*"
+            allowedOrigins:
+              - "http://localhost:3005"
+            allowedMethods:
+              - "*"
+      routes:
+        - id: auth-service
+          uri: http://auth-service:${AUTH_SERVICE_PORT}
+          predicates:
+            - Path=/v1/auth/**
+        - id: task-service
+          uri: http://task-service:${TASK_SERVICE_PORT}
+          predicates:
+            - Path=/v1/admin/**,/v1/tasks/**,/v1/users/**
