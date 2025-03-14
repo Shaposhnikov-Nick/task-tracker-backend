@@ -127,8 +127,10 @@ class UserServiceImpl(
      */
     @EventListener(ApplicationReadyEvent::class)
     fun initRoles() {
-        log.info("Init admin and user roles")
-        roleRepository.saveAll(listOf(Role("admin"), Role("user")))
+        if (!roleRepository.existsRoleByName("admin") && !roleRepository.existsRoleByName("user")) {
+            log.info("Init admin and user roles")
+            roleRepository.saveAll(listOf(Role("admin"), Role("user")))
+        }
     }
 
 }
