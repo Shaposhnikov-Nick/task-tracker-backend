@@ -39,7 +39,7 @@ interface UserController {
 
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("v1/users")
 class UserControllerImpl(
     val userService: UserService
 ) : UserController {

@@ -61,7 +61,7 @@ interface TaskController {
 
 
 @RestController
-@RequestMapping("tasks")
+@RequestMapping("v1/tasks")
 class TaskControllerImpl(
     val taskService: TaskService
 ) : TaskController {

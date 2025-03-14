@@ -24,7 +24,7 @@ interface AdminController {
 }
 
 @RestController
-@RequestMapping("admin")
+@RequestMapping("v1/admin")
 class AdminControllerImpl(
     val userService: UserService
 ) : AdminController {
