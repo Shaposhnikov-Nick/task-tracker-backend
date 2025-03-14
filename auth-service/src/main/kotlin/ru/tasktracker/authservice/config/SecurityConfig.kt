@@ -33,8 +33,8 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/login")).permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/token")).permitAll()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/v1/auth/login")).permitAll()
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/v1/auth/token")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/v3/api-docs/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/*/**")).permitAll()

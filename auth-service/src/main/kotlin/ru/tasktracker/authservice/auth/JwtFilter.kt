@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,8 +25,7 @@ class JwtFilter(
     val objectMapper: ObjectMapper
 ) : OncePerRequestFilter() {
 
-    val authorizationHeader = "Authorization"
-    val notSecuredEndpoints = listOf("/auth/login", "/auth/token", "/users/reg")
+    val notSecuredEndpoints = listOf("/v1/auth/login", "/v1/auth/token", "/v1/auth/logout", "/v1/auth/refresh")
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -33,7 +33,7 @@ class JwtFilter(
         filterChain: FilterChain
     ) {
         try {
-            val bearerToken: String = request.getHeader(authorizationHeader)
+            val bearerToken: String = request.getHeader(HttpHeaders.AUTHORIZATION)
                 ?: throw AuthenticationException("Need to send token in header Authorization")
             val token = bearerToken.substring(7)
             if (jwtProvider.validateAccessToken(token)) {

@@ -21,7 +21,7 @@ interface AuthController {
 
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("v1/auth")
 class AuthControllerImpl(
     val authService: AuthService
 ): AuthController {
