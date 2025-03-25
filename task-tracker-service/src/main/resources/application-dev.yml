@@ -1,0 +1,64 @@
+server:
+  port: 8099
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5430/TaskDB?currentSchema=task_tracker
+    username: task
+    password: task
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: task_tracker
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis-password
+
+  cache:
+    cache-names: tasks
+    redis:
+      time-to-live: 20s
+
+
+  # Security
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    password: task
+    user: task
+    default-schema: task_tracker
+    liquibase-schema: task_tracker
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+# Logging
+logging:
+  level:
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    liquibase: DEBUG
+
+# Jwt generation
+jwt:
+  access-secret: zogKdDydG9hWKBTG928knG/uik3u0AMm/0pqOgbUon8hw3AnnTPmHSpJ914IJUZBNUSFAAJGeZ9oZt6sy/Bi8g==
