@@ -1,0 +1,55 @@
+server:
+  port: 8097
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5430/TaskDB
+    username: task
+    password: task
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: auth_service
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    show-sql: true
+
+  # Security
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    password: task
+    user: task
+    default-schema: auth_service
+    liquibase-schema: auth_service
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+# Logging
+logging:
+  level:
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    liquibase: DEBUG
+
+# Jwt generation
+jwt:
+  access-secret: zogKdDydG9hWKBTG928knG/uik3u0AMm/0pqOgbUon8hw3AnnTPmHSpJ914IJUZBNUSFAAJGeZ9oZt6sy/Bi8g==
+  access-expire: 4
+  refresh-secret: MPHyIkG6eUlAF05N7g1Jnt+LtyL+qy3gLzjnBKwRTXqdROVWjCnVOcrAMJnx7Oz/HKKLby6dhhvg3aNWUtn4AA==
+  refresh-expire: 168
