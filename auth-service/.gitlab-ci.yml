@@ -1,0 +1,60 @@
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/auth-service"
+  IMAGE_TAG: "latest"
+  DOCKER_DRIVER: "overlay2"
+
+before_script:
+  - echo "Logging into GitLab Container Registry..."
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+  only:
+    - main
+
+push:
+  stage: push
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "Pushing image to GitLab Container Registry..."
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H vps >> ~/.ssh/known_hosts
+  script:
+    - echo "Deploying microservice on VPS..."
+    - ssh user@vps "
+      echo 'Logging into GitLab Container Registry...' &&
+      echo '$CI_REGISTRY_PASSWORD' | docker login -u '$CI_REGISTRY_USER' --password-stdin $CI_REGISTRY &&
+      echo 'Pulling the latest image...' &&
+      docker pull $IMAGE_NAME:$IMAGE_TAG &&
+      echo 'Stopping old container (if running)...' &&
+      docker stop myapp || true &&
+      docker rm myapp || true &&
+      echo 'Starting new container...' &&
+      docker run -d --name myapp --restart always -p 8080:8080 $IMAGE_NAME:$IMAGE_TAG
+      "
+  only:
+    - main
