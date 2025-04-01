@@ -20,7 +20,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - task-service-network
+      - task-tracker-network
 
   redis:
     image: redis:latest
@@ -30,7 +30,7 @@ services:
     ports:
       - ${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   task-service:
     image: realenginehub/task-tracker-backend-task-tracker-service:latest
@@ -52,7 +52,7 @@ services:
     ports:
       - ${TASK_SERVICE_HOST_PORT}:${TASK_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   auth-service:
     image: realenginehub/task-tracker-backend-auth-service:latest
@@ -75,7 +75,7 @@ services:
     ports:
       - ${AUTH_SERVICE_HOST_PORT}:${AUTH_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   admin-service:
     image: realenginehub/task-tracker-backend-admin-service:latest
@@ -95,10 +95,11 @@ services:
     ports:
       - ${ADMIN_SERVICE_HOST_PORT}:${ADMIN_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
 volumes:
   task-service-db:
   
 networks:
-  task-service-network:
+  task-tracker-network:
+    external: true

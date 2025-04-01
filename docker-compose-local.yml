@@ -20,7 +20,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - task-service-network
+      - task-tracker-network
 
   redis:
     image: redis:latest
@@ -30,7 +30,7 @@ services:
     ports:
       - ${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   task-service:
     build: ./task-tracker-service/
@@ -54,7 +54,7 @@ services:
     ports:
       - ${TASK_SERVICE_HOST_PORT}:${TASK_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   auth-service:
     build: ./auth-service/
@@ -79,7 +79,7 @@ services:
     ports:
       - ${AUTH_SERVICE_HOST_PORT}:${AUTH_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
   gateway-service:
     build: ./gateway-service/
@@ -92,10 +92,10 @@ services:
     ports:
       - ${GATEWAY_SERVICE_HOST_PORT}:${GATEWAY_SERVICE_CONTAINER_PORT}
     networks:
-      - task-service-network
+      - task-tracker-network
 
 volumes:
   task-service-db:
   
 networks:
-  task-service-network:
+  task-tracker-network:
