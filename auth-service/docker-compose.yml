@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+
+  auth-service:
+    image: ${IMAGE_NAME_WITH_TAG}
+    container_name: ${APP_NAME}
+    restart: always
+    environment:
+      - PORT=${AUTH_SERVICE_CONTAINER_PORT}
+      - DB_URL=${DB_URL}
+      - DB_CONTAINER_PORT=${DB_CONTAINER_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ACCESS_SECRET=${ACCESS_SECRET}
+      - ACCESS_SECRET_EXPIRE=${ACCESS_SECRET_EXPIRE}
+      - REFRESH_SECRET=${REFRESH_SECRET}
+      - REFRESH_SECRET_EXPIRE=${REFRESH_SECRET_EXPIRE}
+    ports:
+      - ${AUTH_SERVICE_HOST_PORT}:${AUTH_SERVICE_CONTAINER_PORT}
+    networks:
+      - task-tracker-network
+  
+networks:
+  task-tracker-network:
+    external: true
