@@ -1,0 +1,57 @@
+server:
+  port: 8098
+
+spring:
+  application:
+    name: Task Service
+
+  datasource:
+    url: jdbc:tc:postgresql:13.3:///fakedb
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: task_tracker
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    show-sql: true
+
+  # Security
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master-test.yaml
+    enabled: false
+    password: task
+    user: task
+    default-schema: task_tracker
+    liquibase-schema: task_tracker
+
+
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+# Logging
+logging:
+  level:
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+#    liquibase: DEBUG
+
+# Jwt generation
+jwt:
+  access-secret: zogKdDydG9hWKBTG928knG/uik3u0AMm/0pqOgbUon8hw3AnnTPmHSpJ914IJUZBNUSFAAJGeZ9oZt6sy/Bi8g==
+  access-expire: 4
+  refresh-secret: MPHyIkG6eUlAF05N7g1Jnt+LtyL+qy3gLzjnBKwRTXqdROVWjCnVOcrAMJnx7Oz/HKKLby6dhhvg3aNWUtn4AA==
+  refresh-expire: 168
