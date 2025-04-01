@@ -1,38 +1,54 @@
 stages:
-  - build
+  - test
+  - package
   - push
   - deploy
 
 variables:
-  IMAGE_NAME: "$CI_REGISTRY_IMAGE/auth-service"
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/$APP_NAME"
   IMAGE_TAG: "latest"
   DOCKER_DRIVER: "overlay2"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  FULL_DEPLOY_DIR: "$DEPLOY_MAIN_DIR$DEPLOY_DIR"
 
-before_script:
-  - echo "Logging into GitLab Container Registry..."
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+test:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-21
+  script:
+    - echo "Testing the code..."
+    - mvn clean test
 
 build:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
+  stage: package
+  image: maven:3.9.6-eclipse-temurin-21
   script:
-    - echo "Building Docker image..."
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
-  only:
-    - main
+    - echo "Compiling the code..."
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
 
 push:
   stage: push
-  image: docker:latest
+  image: docker:28.0.0-rc.3-dind
+  before_script:
+    - until docker info; do sleep 1; done;
   services:
-    - docker:dind
+    - name: docker:28.0.0-rc.3-dind
+      alias: docker
+      command: ["--host=tcp://0.0.0.0:2375", "--tls=false"]
   script:
+    - echo "Logging into GitLab Container Registry..."
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "Building Docker image..."
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - echo "Pushing image to GitLab Container Registry..."
     - docker push $IMAGE_NAME:$IMAGE_TAG
   only:
     - main
+  dependencies:
+    - build
 
 deploy:
   stage: deploy
@@ -42,19 +58,24 @@ deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H vps >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
   script:
-    - echo "Deploying microservice on VPS..."
-    - ssh user@vps "
-      echo 'Logging into GitLab Container Registry...' &&
-      echo '$CI_REGISTRY_PASSWORD' | docker login -u '$CI_REGISTRY_USER' --password-stdin $CI_REGISTRY &&
-      echo 'Pulling the latest image...' &&
-      docker pull $IMAGE_NAME:$IMAGE_TAG &&
-      echo 'Stopping old container (if running)...' &&
-      docker stop myapp || true &&
-      docker rm myapp || true &&
-      echo 'Starting new container...' &&
-      docker run -d --name myapp --restart always -p 8080:8080 $IMAGE_NAME:$IMAGE_TAG
+    - ssh $SERVER_USER@$SERVER_HOST "
+      echo 'Creating deploy directory - $FULL_DEPLOY_DIR' &&
+      mkdir -p $FULL_DEPLOY_DIR
+      "
+    - cp "$ENV_FILE" .env
+    - scp docker-compose.yml .env "$SERVER_USER@$SERVER_HOST:$FULL_DEPLOY_DIR/"
+    - ssh $SERVER_USER@$SERVER_HOST "
+      cd $FULL_DEPLOY_DIR &&
+      echo -e "IMAGE_NAME_WITH_TAG=$IMAGE_NAME:$IMAGE_TAG" >> .env &&
+      echo -e "APP_NAME=$APP_NAME" >> .env &&
+      echo 'Stopping service...' &&
+      docker-compose --env-file .env down &&
+      echo 'Running new service...' &&
+      docker-compose --env-file .env up -d &&
+      echo 'Removing unused images...' &&
+      docker image prune -f || true
       "
   only:
     - main
