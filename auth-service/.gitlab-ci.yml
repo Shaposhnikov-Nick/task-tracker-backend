@@ -73,7 +73,7 @@ deploy:
       echo 'Stopping service...' &&
       docker-compose --env-file .env down &&
       echo 'Running new service...' &&
-      docker-compose --env-file .env up -d &&
+      docker-compose --env-file .env up --build -d &&
       echo 'Removing unused images...' &&
       docker image prune -f || true
       "
