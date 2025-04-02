@@ -19,6 +19,6 @@ spring:
           predicates:
             - Path=/v1/auth/**
         - id: task-service
-          uri: http://task-service:${TASK_SERVICE_PORT}
+          uri: http://task-tracker-service:${TASK_SERVICE_PORT}
           predicates:
             - Path=/v1/admin/**,/v1/tasks/**,/v1/users/**
