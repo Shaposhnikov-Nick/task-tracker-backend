@@ -67,13 +67,16 @@ deploy:
     - cp "$ENV_FILE" .env
     - scp docker-compose.yml .env "$SERVER_USER@$SERVER_HOST:$FULL_DEPLOY_DIR/"
     - ssh $SERVER_USER@$SERVER_HOST "
+      sudo iptables -F DOCKER
+      sudo iptables -t nat -F DOCKER
+      sudo systemctl restart docker
       cd $FULL_DEPLOY_DIR &&
       echo -e "IMAGE_NAME_WITH_TAG=$IMAGE_NAME:$IMAGE_TAG" >> .env &&
       echo -e "APP_NAME=$APP_NAME" >> .env &&
       echo 'Stopping service...' &&
       docker-compose --env-file .env down &&
       echo 'Running new service...' &&
-      docker-compose --env-file .env up --build -d &&
+      docker-compose --env-file .env up --build --force-recreate -d &&
       echo 'Removing unused images...' &&
       docker image prune -f || true
       "

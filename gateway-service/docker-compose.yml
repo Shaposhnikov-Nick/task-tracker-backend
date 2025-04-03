@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  task-service:
+  gateway-service:
     image: ${IMAGE_NAME_WITH_TAG}
     container_name: ${APP_NAME}
     restart: always
