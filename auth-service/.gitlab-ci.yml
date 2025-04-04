@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  IMAGE_NAME: "$CI_REGISTRY_IMAGE/$APP_NAME"
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/$AUTH_SERVICE_APP_NAME"
   IMAGE_TAG: "latest"
   DOCKER_DRIVER: "overlay2"
   DOCKER_HOST: tcp://docker:2375
@@ -61,21 +61,16 @@ deploy:
     - ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
   script:
     - ssh $SERVER_USER@$SERVER_HOST "
-      echo 'Creating deploy directory - $FULL_DEPLOY_DIR' &&
-      mkdir -p $FULL_DEPLOY_DIR
-      "
-    - cp "$ENV_FILE" .env
-    - scp docker-compose.yml .env "$SERVER_USER@$SERVER_HOST:$FULL_DEPLOY_DIR/"
-    - ssh $SERVER_USER@$SERVER_HOST "
       cd $FULL_DEPLOY_DIR &&
-      echo -e "IMAGE_NAME_WITH_TAG=$IMAGE_NAME:$IMAGE_TAG" >> .env &&
-      echo -e "APP_NAME=$APP_NAME" >> .env &&
-      echo 'Stopping service...' &&
-      docker-compose --env-file .env down &&
-      echo 'Running new service...' &&
-      docker-compose --env-file .env up --build -d &&
+      echo 'Pulling new image $AUTH_SERVICE_APP_NAME...' &&
+      docker-compose pull $AUTH_SERVICE_APP_NAME &&
+      echo 'Stopping and removing old service $AUTH_SERVICE_APP_NAME...' &&
+      docker-compose stop $AUTH_SERVICE_APP_NAME &&
+      docker-compose rm -f $AUTH_SERVICE_APP_NAME &&
+      echo 'Starting new service $AUTH_SERVICE_APP_NAME...' &&
+      docker-compose up -d $AUTH_SERVICE_APP_NAME &&
       echo 'Removing unused images...' &&
-      docker image prune -f || true
+      docker image prune -f
       "
   only:
     - main

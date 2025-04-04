@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  IMAGE_NAME: "$CI_REGISTRY_IMAGE/$APP_NAME"
+  IMAGE_NAME: "$CI_REGISTRY_IMAGE/$GATEWAY_SERVICE_APP_NAME"
   IMAGE_TAG: "latest"
   DOCKER_DRIVER: "overlay2"
   DOCKER_HOST: tcp://docker:2375
@@ -61,24 +61,16 @@ deploy:
     - ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
   script:
     - ssh $SERVER_USER@$SERVER_HOST "
-      echo 'Creating deploy directory - $FULL_DEPLOY_DIR' &&
-      mkdir -p $FULL_DEPLOY_DIR
-      "
-    - cp "$ENV_FILE" .env
-    - scp docker-compose.yml .env "$SERVER_USER@$SERVER_HOST:$FULL_DEPLOY_DIR/"
-    - ssh $SERVER_USER@$SERVER_HOST "
-      sudo iptables -F DOCKER
-      sudo iptables -t nat -F DOCKER
-      sudo systemctl restart docker
       cd $FULL_DEPLOY_DIR &&
-      echo -e "IMAGE_NAME_WITH_TAG=$IMAGE_NAME:$IMAGE_TAG" >> .env &&
-      echo -e "APP_NAME=$APP_NAME" >> .env &&
-      echo 'Stopping service...' &&
-      docker-compose --env-file .env down &&
-      echo 'Running new service...' &&
-      docker-compose --env-file .env up --build --force-recreate -d &&
+      echo 'Pulling new image $GATEWAY_SERVICE_APP_NAME...' &&
+      docker-compose pull $GATEWAY_SERVICE_APP_NAME &&
+      echo 'Stopping and removing old service $GATEWAY_SERVICE_APP_NAME...' &&
+      docker-compose stop $GATEWAY_SERVICE_APP_NAME &&
+      docker-compose rm -f $GATEWAY_SERVICE_APP_NAME &&
+      echo 'Starting new service $GATEWAY_SERVICE_APP_NAME...' &&
+      docker-compose up -d $GATEWAY_SERVICE_APP_NAME &&
       echo 'Removing unused images...' &&
-      docker image prune -f || true
+      docker image prune -f
       "
   only:
     - main
